@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import Footer from "@/models/footer";
 import Tutorial from "@/models/howItWorks";
 import Prices from "@/models/prices";
@@ -19,12 +20,15 @@ export default function Home() {
               que, ao ser escaneado, revela uma página personalizada com a foto
               do casal e o <span className="text-secondary">grande pedido</span>
             </p>
-            <Button
-              variant="glow"
-              className="text-xl w-full md:w-auto md:text-2xl p-8 font-bold hover:scale-[1.02]"
+            <Link
+              href="/create"
+              className={cn(
+                buttonVariants({ variant: "glow" }),
+                "text-xl w-full md:w-auto md:text-2xl p-8 font-bold hover:scale-[1.02]"
+              )}
             >
-              <Link href="/create">Quero criar meu site</Link>
-            </Button>
+              Quero criar meu site
+            </Link>
           </div>
           <div>
             <Image
