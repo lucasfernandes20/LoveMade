@@ -3,6 +3,19 @@ import Stripe from "stripe";
 
 export async function POST(request: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
+  const body = await request.json();
+  const { plan } = body;
+
+  const priceIdMap: Record<string, string | undefined> = {
+    romantic: process.env.NEXT_PUBLIC_ROMANTIC_STRIPE_PRICE_ID,
+    surprise: process.env.NEXT_PUBLIC_SURPRISE_STRIPE_PRICE_ID,
+  };
+
+  const selectedPriceId = priceIdMap[plan];
+
+  if (!selectedPriceId) {
+    return NextResponse.json({ error: "Plano inválido" }, { status: 400 });
+  }
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -10,7 +23,7 @@ export async function POST(request: Request) {
       line_items: [
         {
           quantity: 1,
-          price: process.env.NEXT_PUBLIC_ROMANTIC_STRIPE_PRICE_ID,
+          price: selectedPriceId,
         },
       ],
       mode: "payment",

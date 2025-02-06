@@ -13,10 +13,10 @@ export default function Header() {
         <div className="">
           <ul className="flex items-center gap-10">
             <li className="text-foreground/80 hover:text-foreground">
-              <Link href="#tutorial">Como funciona</Link>
+              <Link href="/#tutorial">Como funciona</Link>
             </li>
             <li className="text-foreground/80 hover:text-foreground">
-              <Link href="#prices">Pacotes</Link>
+              <Link href="/#prices">Pacotes</Link>
             </li>
           </ul>
         </div>

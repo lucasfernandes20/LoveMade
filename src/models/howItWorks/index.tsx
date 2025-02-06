@@ -41,7 +41,7 @@ export default function Tutorial() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.2 }}
           >
-            <Card className="p-6 flex flex-col items-center text-center shadow-lg hover:scale-105 transition-transform flex-grow">
+            <Card className="p-6 bg-primary flex flex-col items-center text-center shadow-lg hover:scale-105 transition-transform flex-grow">
               <CardHeader>{step.icon}</CardHeader>
               <CardContent>
                 <h3 className="text-xl font-semibold mt-4">{step.title}</h3>

@@ -29,7 +29,7 @@ export const prices = [
     desvantagens: ["Não inclui música"],
     price: "R$ 14,90",
     mostPopular: true,
-    planName: "default",
+    planName: "romantic",
   },
   {
     title: "Surpresa 💎",
@@ -43,13 +43,13 @@ export const prices = [
     desvantagens: [],
     price: "R$ 29,90",
     mostPopular: false,
-    planName: "complete",
+    planName: "surprise",
   },
 ];
 
 export default function Prices() {
   return (
-    <section className="min-h-[calc(100svh-5rem)]" id="prices">
+    <section className="min-h-[calc(100svh-10rem)] mt-12" id="prices">
       <h2 className="text-5xl font-bold text-center">Preços</h2>
       <div className="flex flex-col gap-8 mt-10 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-14 lg:mt-28">
         {prices.map((price) => (
@@ -59,9 +59,9 @@ export default function Prices() {
               "text-foreground relative px-4 flex flex-col",
               {
                 basic: "bg-gradient-to-tr from-muted to-muted/50",
-                default:
+                romantic:
                   "lg:-translate-y-10 lg:scale-105 bg-primary text-primary-foreground border-2 border-yellow-500",
-                complete:
+                surprise:
                   "bg-gradient-to-tr from-black to-gray-900 text-primary-foreground border-2 border-yellow-600 md:col-span-2 lg:col-span-1",
               }[price.planName]
             )}
@@ -109,8 +109,8 @@ export default function Prices() {
                   {
                     {
                       basic: "Testar Agora",
-                      default: "Escolher esse 💗",
-                      complete: "Criar Meu Pedido",
+                      romantic: "Escolher esse 💗",
+                      surprise: "Criar Meu Pedido",
                     }[price.planName]
                   }
                 </Link>
