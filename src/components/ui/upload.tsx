@@ -7,36 +7,51 @@ import { toast } from "sonner";
 
 const Upload = React.forwardRef<
   HTMLInputElement,
-  React.ComponentProps<"input"> & { quantity?: number }
->(({ className, quantity, ...props }, ref) => {
+  Omit<React.ComponentProps<"input">, "value"> & {
+    onFilesChange: (files: File[]) => void;
+    value: File[];
+    quantity?: number;
+  }
+>(({ className, quantity, onFilesChange, value = [], ...props }, ref) => {
   const [files, setFiles] = React.useState<File[]>([]);
   const [uploaded, setUploaded] = React.useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
+    let newFiles = [...files, ...selectedFiles];
+
     if (quantity && selectedFiles.length + files.length > quantity) {
-      toast.error(`Você pode adicionar no máximo ${quantity} fotos`);
-      const remaining = quantity - files.length;
-      if (remaining <= 0) return;
-      setFiles((prevFiles) => [
-        ...prevFiles,
-        ...selectedFiles.slice(0, remaining),
-      ]);
+      toast.error(
+        `Você pode adicionar no máximo ${quantity} foto${
+          quantity > 1 ? "s" : ""
+        }`
+      );
+      newFiles = newFiles.slice(0, quantity);
+      if (newFiles.length === files.length) return;
+      setFiles(newFiles);
+      onFilesChange(newFiles);
       setUploaded(true);
       setTimeout(() => setUploaded(false), 2000);
       return;
     }
-    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    setFiles(newFiles);
+    onFilesChange(newFiles);
     setUploaded(true);
     setTimeout(() => setUploaded(false), 2000);
   };
 
   const removeFile = (index: number) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    const newFiles = files.filter((_, i) => i !== index);
+    setFiles(newFiles);
+    onFilesChange(newFiles);
   };
 
+  React.useEffect(() => {
+    setFiles(value);
+  }, [value]);
+
   return (
-    <div className="w-full flex-1">
+    <div className="w-full flex-grow">
       <div
         className={cn(
           "border-2 border-dashed border-primary relative col-span-full rounded-3xl min-h-36 grid place-items-center overflow-hidden",
@@ -72,7 +87,12 @@ const Upload = React.forwardRef<
           {...props}
         />
       </div>
-      <div className="mt-4 flex items-end gap-2 flex-wrap">
+      <div
+        className={cn(
+          "flex items-end gap-2 flex-wrap",
+          files.length > 0 && "mt-4"
+        )}
+      >
         {files.map((file, index) => (
           <div
             key={index}

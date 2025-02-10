@@ -1,41 +1,43 @@
 "use client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Upload } from "@/components/ui/upload";
-import { prices } from "@/models/prices";
-import Footer from "@/models/footer";
+import Footer from "@/modules/footer";
 import { useEffect, useState } from "react";
-import PaymentButton from "@/components/paymentButton";
+import CreateForm from "@/modules/create-form";
+import { FormData, PlanNameEnum, prices } from "@/models";
+import ProposalPreview from "@/modules/ProposalPreview";
+import { Suspense } from "react";
+import { SmartphoneIcon, TvMinimalIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export default function FormPage() {
+function FormContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [selectedPlan, setSelectedPlan] = useState(
-    searchParams.get("plan") || "romantic"
+  const [selectedPlan, setSelectedPlan] = useState<PlanNameEnum>(
+    (searchParams.get("plan") as PlanNameEnum) || PlanNameEnum.Romantic
+  );
+  const [formData, setFormData] = useState<
+    Record<PlanNameEnum, FormData | null>
+  >({
+    [PlanNameEnum.Basic]: null,
+    [PlanNameEnum.Romantic]: null,
+    [PlanNameEnum.Surprise]: null,
+  });
+  const [selectedDisplay, setSelectedDisplay] = useState<"pc" | "phone">(
+    "phone"
   );
 
   useEffect(() => {
     const plan = searchParams.get("plan");
     if (plan && plan !== selectedPlan) {
-      setSelectedPlan(plan);
+      setSelectedPlan(plan as PlanNameEnum);
     }
   }, [searchParams]);
 
   const handlePlanChange = (plan: string) => {
-    setSelectedPlan(plan);
+    setSelectedPlan(plan as PlanNameEnum);
     const params = new URLSearchParams(window.location.search);
     params.set("plan", plan);
     router.push(`?${params.toString()}`);
@@ -46,118 +48,94 @@ export default function FormPage() {
       <section className="container mx-auto flex-grow">
         <h1 className="text-4xl font-bold mb-6">Quase lá!</h1>
         <p className="text-lg mb-6">Preencha os dados para criar seu pedido</p>
-        <div className="grid  grid-cols-[3fr_1.5fr] gap-12">
-          <Tabs defaultValue={selectedPlan} onValueChange={handlePlanChange}>
-            <TabsList className="">
+        <div
+          className={cn(
+            "w-full flex flex-col md:grid md:grid-cols-[3fr_1.5fr] gap-12 transition-all duration-300",
+            selectedDisplay === "pc" && "md:grid-cols-[1.5fr_3fr]"
+          )}
+        >
+          <Tabs
+            defaultValue={selectedPlan}
+            onValueChange={handlePlanChange}
+            className="w-full md:w-auto"
+          >
+            <TabsList className="flex-col h-auto w-full md:w-auto md:inline-flex md:flex-row md:h-10">
               {prices.map((price) => (
-                <TabsTrigger key={price.title} value={price.planName}>
+                <TabsTrigger
+                  key={price.title}
+                  value={price.planName}
+                  className="w-full md:w-auto"
+                >
                   {price.title} • {price.price}
                 </TabsTrigger>
               ))}
             </TabsList>
 
             <TabsContent value="basic">
-              <Card className="bg-background p-8 mt-6 shadow-2xl shadow-black grid grid-cols-2 gap-8">
-                <Label htmlFor="name">
-                  <span className="mb-2 ml-3">Nome da pessoa amada</span>
-                  <Input id="name" />
-                </Label>
-                <Label htmlFor="name">
-                  <span className="mb-2 ml-3">Pedido para</span>
-                  <Select defaultValue="dating">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dating">Namoro</SelectItem>
-                      <SelectItem value="marriage">Casamento</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Label>
-                <Label htmlFor="name" className="col-span-2">
-                  <span className="mb-2 ml-3">Envie as fotos do casal</span>
-                  <Upload id="upload" quantity={1} />
-                </Label>
-                <Button className="w-full">Criar nosso site</Button>
+              <Card className="w-full md:w-auto bg-background p-8 mt-6 shadow-2xl shadow-black">
+                <CreateForm selectedPlan={selectedPlan} changes={setFormData} />
               </Card>
             </TabsContent>
 
             <TabsContent value="romantic">
-              <Card className="bg-background p-8 mt-6 shadow-2xl shadow-black">
-                <form className="grid grid-cols-2 gap-8">
-                  <Label htmlFor="name">
-                    <span className="mb-2 ml-3">Nome da pessoa amada</span>
-                    <Input id="name" />
-                  </Label>
-                  <Label htmlFor="name">
-                    <span className="mb-2 ml-3">Pedido para</span>
-                    <Select defaultValue="dating">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="dating">Namoro</SelectItem>
-                        <SelectItem value="marriage">Casamento</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </Label>
-                  <Label htmlFor="name" className="col-span-2">
-                    <span className="mb-2 ml-3">Envie as fotos do casal</span>
-                    <Upload id="upload" multiple quantity={10} />
-                  </Label>
-                  <Label htmlFor="name" className="col-span-2">
-                    <span className="mb-2 ml-3">Pedido personalizado</span>
-                    <Textarea
-                      placeholder="Escreva seu lindo pedido. Capricha hein! ❤️"
-                      className="col-span-2 resize-none"
-                    />
-                  </Label>
-                  <PaymentButton plan={selectedPlan} />
-                </form>
+              <Card className="w-full md:w-auto bg-background p-8 mt-6 shadow-2xl shadow-black">
+                <CreateForm selectedPlan={selectedPlan} changes={setFormData} />
               </Card>
             </TabsContent>
 
             <TabsContent value="surprise">
-              <Card className="bg-background p-8 mt-6 shadow-2xl shadow-black grid grid-cols-2 gap-8">
-                <Label htmlFor="name">
-                  <span className="mb-2 ml-3">Nome da pessoa amada</span>
-                  <Input id="name" />
-                </Label>
-                <Label htmlFor="name">
-                  <span className="mb-2 ml-3">Pedido para</span>
-                  <Select defaultValue="dating">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dating">Namoro</SelectItem>
-                      <SelectItem value="marriage">Casamento</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Label>
-                <Label htmlFor="name" className="col-span-2">
-                  <span className="mb-2 ml-3">Envie as fotos do casal</span>
-                  <Upload id="upload" multiple quantity={10} />
-                </Label>
-                <Label htmlFor="name" className="col-span-2">
-                  <span className="mb-2 ml-3">Pedido personalizado</span>
-                  <Textarea
-                    placeholder="Escreva seu lindo pedido. Capricha hein! ❤️"
-                    className="col-span-2 resize-none"
-                  />
-                </Label>
-                <Label htmlFor="music" className="col-span-2">
-                  <span className="mb-2 ml-3">Música</span>
-                  <Input placeholder="Link do youtube" className="col-span-2" />
-                </Label>
-                <PaymentButton plan={selectedPlan} />
+              <Card className="w-full md:w-auto bg-background p-8 mt-6 shadow-2xl shadow-black">
+                <CreateForm selectedPlan={selectedPlan} changes={setFormData} />
               </Card>
             </TabsContent>
           </Tabs>
-          <Card>Assim ficará seu site</Card>
+          <div className="relative mt-12 md:mt-0">
+            <div className="absolute flex md:flex-col gap-4 right-1/2 translate-x-1/2 -translate-y-[calc(100%+1rem)] md:top-1/2 md:-translate-y-1/2 md:right-0 md:translate-x-[calc(100%+1rem)]">
+              <div
+                className={cn(
+                  "rounded-full bg-muted-foreground/60 p-4 cursor-pointer hover:bg-card border-[1px] flex items-center gap-2",
+                  selectedDisplay === "pc" && "bg-card border-primary"
+                )}
+                onClick={() => setSelectedDisplay("pc")}
+              >
+                <TvMinimalIcon className="size-4 md:size-max" />
+                <p className="text-xs md:hidden">Computador</p>
+              </div>
+              <div
+                className={cn(
+                  "rounded-full bg-muted-foreground/60 p-4 cursor-pointer hover:bg-card border-[1px] flex items-center gap-2",
+                  selectedDisplay === "phone" && "bg-card border-primary"
+                )}
+                onClick={() => setSelectedDisplay("phone")}
+              >
+                <SmartphoneIcon className="size-4 md:size-max" />
+                <p className="text-xs md:hidden">Smartphone</p>
+              </div>
+            </div>
+            <Card
+              className={cn(
+                "border-2 border-primary overflow-hidden transition-all duration-300",
+                selectedDisplay === "phone" ? "aspect-[9/16]" : "aspect-[16/9]"
+              )}
+            >
+              <ProposalPreview
+                formData={formData}
+                selectedPlan={selectedPlan}
+                selectedDisplay={selectedDisplay}
+              />
+            </Card>
+          </div>
         </div>
       </section>
       <Footer />
     </div>
+  );
+}
+
+export default function FormPage() {
+  return (
+    <Suspense>
+      <FormContent />
+    </Suspense>
   );
 }

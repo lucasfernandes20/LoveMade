@@ -14,30 +14,31 @@ import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
+import { PlanNameEnum } from "@/models";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""
 );
 
 interface PaymentButtonProps {
-  plan: string;
+  selectedPlan: PlanNameEnum;
 }
 
-export default function PaymentButton({ plan }: PaymentButtonProps) {
+export default function PaymentButton({ selectedPlan }: PaymentButtonProps) {
   const fetchClientSecret = useCallback(() => {
     return fetch("/api/checkout", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ plan }),
+      body: JSON.stringify({ plan: selectedPlan }),
     })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
         return data.client_secret;
       });
-  }, []);
+  }, [selectedPlan]);
 
   const options = { fetchClientSecret };
 

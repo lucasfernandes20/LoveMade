@@ -1,8 +1,8 @@
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Footer from "@/models/footer";
-import Tutorial from "@/models/howItWorks";
-import Prices from "@/models/prices";
+import Footer from "@/modules/footer";
+import Tutorial from "@/modules/how-it-works";
+import Prices from "@/modules/prices";
 import Image from "next/image";
 import Link from "next/link";
 
