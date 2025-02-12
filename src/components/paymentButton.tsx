@@ -20,25 +20,21 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""
 );
 
-interface PaymentButtonProps {
-  selectedPlan: PlanNameEnum;
-}
-
-export default function PaymentButton({ selectedPlan }: PaymentButtonProps) {
+export default function PaymentButton() {
   const fetchClientSecret = useCallback(() => {
     return fetch("/api/checkout", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ plan: selectedPlan }),
+      body: JSON.stringify({ plan: PlanNameEnum.Romantic }),
     })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
         return data.client_secret;
       });
-  }, [selectedPlan]);
+  }, []);
 
   const options = { fetchClientSecret };
 

@@ -7,12 +7,13 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const MOCK_COUPLE_IMAGES = [
-  "/images/casal/casal-1.jpg",
   "/images/casal/casal-2.jpg",
+  "/images/casal/casal-1.jpg",
 ];
 
 interface CarouselProps {
@@ -39,7 +40,17 @@ export function StyledCarousel({ photos }: CarouselProps) {
 
   return (
     <div className="mx-auto  relative">
-      <Carousel setApi={setApi} className="w-full" opts={{ loop: true }}>
+      <Carousel
+        setApi={setApi}
+        className="w-full"
+        opts={{ loop: true }}
+        plugins={[
+          Autoplay({
+            delay: 3000,
+            active: true,
+          }),
+        ]}
+      >
         <CarouselContent>
           {(photos || MOCK_COUPLE_IMAGES)?.map((photo, index) => (
             <CarouselItem key={index}>
@@ -63,7 +74,12 @@ export function StyledCarousel({ photos }: CarouselProps) {
           ))}
         </CarouselContent>
       </Carousel>
-      <div className="px-2 py-1 rounded-full text-muted flex items-center gap-1 bg-white/60 w-fit absolute bottom-3 left-1/2 -translate-x-1/2">
+      <div
+        className={cn(
+          "px-2 py-1 rounded-full text-muted flex items-center gap-1 bg-white/60 w-fit absolute bottom-3 left-1/2 -translate-x-1/2",
+          count < 2 && "hidden"
+        )}
+      >
         {Array.from(Array(count)).map((_, index) => (
           <div
             key={index}

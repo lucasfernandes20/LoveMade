@@ -8,7 +8,7 @@ const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
   display: "auto",
-  weight: ["100", "200", "500", "700", "900"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "900"],
 });
 
 const lobster = Lobster({
@@ -29,9 +29,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body
-        className={`${poppins.className} ${lobster.variable} antialiased dark min-h-svh`}
+        className={`${poppins.className} ${lobster.variable} font-poppins antialiased dark min-h-svh`}
       >
         <Header />
         {children}
