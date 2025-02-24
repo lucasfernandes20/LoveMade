@@ -1,4 +1,4 @@
-import { Space } from "@/components/CanvasStars";
+import { Stars } from "@/components/animations/stars";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -17,14 +17,14 @@ export default function Prices() {
       className="w-full min-h-[calc(100svh-10rem)] mt-12 relative overflow-hidden"
       id="prices"
     >
-      <Space
+      <Stars
         backgroundColor="transparent"
         particleCount={200}
         baseHue={300}
         baseSpeed={0.01}
         rangeSpeed={0.2}
         rangeY={650}
-        className="flex items-center flex-col justify-center gap-16 px-2 md:px-10 py-8 w-full h-full"
+        className="w-full h-full"
       >
         <h2 className="text-2xl md:text-5xl font-bold text-center">
           Nossos Planos
@@ -45,7 +45,7 @@ export default function Prices() {
               )}
               <Card
                 variant="glow"
-                className="bg-gradient-radial from-indigo-950 to-background text-primary-foreground relative px-10 flex flex-col"
+                containerClassName="bg-gradient-radial from-indigo-950 to-background text-primary-foreground relative px-10 flex flex-col"
               >
                 <CardHeader className="text-2xl p-0 pt-12 pb-6 font-bold">
                   {price.title}
@@ -103,7 +103,7 @@ export default function Prices() {
             </div>
           ))}
         </div>
-      </Space>
+      </Stars>
     </section>
   );
 }

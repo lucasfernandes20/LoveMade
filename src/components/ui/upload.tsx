@@ -1,39 +1,24 @@
-import * as React from "react";
-
+import React from "react";
 import { cn } from "@/lib/utils";
-import { CheckCircleIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import { CheckCircleIcon, Trash2Icon, UploadIcon, XIcon } from "lucide-react";
 import Image from "next/image";
-import { toast } from "sonner";
+
+const MAX_QUANTITY = 7;
 
 const Upload = React.forwardRef<
   HTMLInputElement,
-  Omit<React.ComponentProps<"input">, "value"> & {
+  React.ComponentProps<"input"> & {
     onFilesChange: (files: File[]) => void;
-    value: File[];
-    quantity?: number;
+    files: File[];
   }
->(({ className, quantity, onFilesChange, value = [], ...props }, ref) => {
-  const [files, setFiles] = React.useState<File[]>([]);
+>(({ className, onFilesChange, ...props }, ref) => {
+  const [files, setFiles] = React.useState<File[]>(props.files || []);
   const [uploaded, setUploaded] = React.useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
-    let newFiles = [...files, ...selectedFiles];
+    const newFiles = [...files, ...selectedFiles];
 
-    if (quantity && selectedFiles.length + files.length > quantity) {
-      toast.error(
-        `Você pode adicionar no máximo ${quantity} foto${
-          quantity > 1 ? "s" : ""
-        }`
-      );
-      newFiles = newFiles.slice(0, quantity);
-      if (newFiles.length === files.length) return;
-      setFiles(newFiles);
-      onFilesChange(newFiles);
-      setUploaded(true);
-      setTimeout(() => setUploaded(false), 2000);
-      return;
-    }
     setFiles(newFiles);
     onFilesChange(newFiles);
     setUploaded(true);
@@ -45,10 +30,6 @@ const Upload = React.forwardRef<
     setFiles(newFiles);
     onFilesChange(newFiles);
   };
-
-  React.useEffect(() => {
-    setFiles(value);
-  }, [value]);
 
   return (
     <div className="w-full flex-grow">
@@ -74,50 +55,48 @@ const Upload = React.forwardRef<
         >
           <UploadIcon className="text-primary w-10 h-10" />
           <p className="text-primary">Escolha ou arraste suas fotos</p>
+          <span className="text-xs font-sans text-neutral-400">
+            PNG, JPG, JPEG (Máx 7 fotos)
+          </span>
         </div>
         <input
           type="file"
-          accept="image/png, image/jpeg"
+          accept="image/png, image/jpeg, image/jpg"
           className={cn(
             "flex-1 w-full h-full cursor-pointer absolute top-0 left-0 rounded-3xl opacity-0",
             className
           )}
+          multiple
+          max={MAX_QUANTITY}
           ref={ref}
-          onChange={handleChange}
           {...props}
+          onChange={handleChange}
         />
       </div>
       <div
         className={cn(
-          "flex items-end gap-2 flex-wrap",
-          files.length > 0 && "mt-4"
+          "flex items-end gap-6 flex-wrap",
+          files.length > 0 && "mt-6"
         )}
       >
         {files.map((file, index) => (
-          <div
-            key={index}
-            className="relative rounded-full group border-2 border-transparent hover:border-red-700 hover:cursor-pointer"
-            onClick={() => removeFile(index)}
-          >
+          <div key={index} className="relative border-2 border-transparent">
+            <div
+              className="absolute -top-3 -right-3 bg-neutral-500 rounded-full overflow-hidden group cursor-pointer hover:bg-muted"
+              onClick={() => removeFile(index)}
+            >
+              <XIcon className="" />
+            </div>
             <Image
               src={URL.createObjectURL(file)}
               alt={`Preview ${index}`}
-              className="rounded-full object-cover w-12 h-12 bg-white group-hover:blur-sm group-hover:opacity-50"
+              className="rounded object-cover w-12 h-12"
               width={30}
               height={30}
             />
             <Trash2Icon className="opacity-0 group-hover:opacity-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
           </div>
         ))}
-        {quantity && quantity > files.length && !!files.length && (
-          <span className="text-sm block mt-2 ml-4 select-none">
-            Faltam{" "}
-            <strong className="bg-primary p-1 rounded-full">
-              +{quantity - files.length}
-            </strong>{" "}
-            fotos
-          </span>
-        )}
       </div>
     </div>
   );

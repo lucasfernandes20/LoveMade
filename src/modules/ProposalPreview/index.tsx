@@ -1,32 +1,55 @@
 "use client";
 import React from "react";
-import { FormData } from "@/models";
 import { StyledCarousel } from "@/components/styledCarousel";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAppState } from "@/context";
+import { animationsIds, AnimationTypeEnum } from "@/models";
+import { Aurora } from "@/components/animations/light-sky";
+import { Stars } from "@/components/animations/stars";
 
 interface ProposalPreviewProps {
-  formData?: FormData;
   selectedDisplay: "pc" | "phone";
 }
 
 export default function ProposalPreview({
-  formData,
   selectedDisplay,
 }: ProposalPreviewProps) {
+  const [state] = useAppState();
+  const { checkoutForm } = state;
+
+  const handleRenderAnimationContainer = (children: React.ReactNode) => {
+    switch (checkoutForm?.pageAnimation) {
+      case animationsIds[AnimationTypeEnum["SKY_LIGHT"]]:
+        return <Aurora className="w-full h-full">{children}</Aurora>;
+      case animationsIds[AnimationTypeEnum["STARS"]]:
+        return (
+          <Stars
+            backgroundColor="transparent"
+            particleCount={200}
+            baseHue={300}
+            baseSpeed={0.01}
+            rangeSpeed={0.2}
+            rangeY={650}
+            className="w-full h-full"
+          >
+            {children}
+          </Stars>
+        );
+      default:
+        return children;
+    }
+  };
+
   return (
     <div
       className={cn(
-        "py-8 transition-all duration-300 max-h-full overflow-y-auto",
-        selectedDisplay === "pc"
-          ? "grid grid-cols-[3fr_2fr] gap-4 container"
-          : ""
+        "container relative mx-auto py-8 transition-all duration-300 w-full min-h-full overflow-y-auto bg-black overflow-hidden",
+        selectedDisplay === "pc" ? "grid grid-cols-[3fr_2fr] gap-4" : ""
       )}
     >
-      <div>
-        <div
-          className={cn(selectedDisplay === "pc" ? "" : "container mx-auto")}
-        >
+      {handleRenderAnimationContainer(
+        <div>
           <h2
             className={cn(
               "mb-2 text-primary font-lobster",
@@ -35,32 +58,20 @@ export default function ProposalPreview({
                 : "text-center text-2xl"
             )}
           >
-            {formData?.senderName || "Seu Nome"} &{" "}
-            {formData?.receiverName || "Nome da Pessoa Amada"}
+            {checkoutForm?.pageTitle || "Título da proposta"}
           </h2>
-        </div>
-        <div className={cn(selectedDisplay === "pc" ? "hidden" : "")}>
-          <StyledCarousel photos={formData?.photos} />
-        </div>
-        <div
-          className={cn(selectedDisplay === "pc" ? "" : "container mx-auto")}
-        >
-          <p className="text-lg text-center">
-            {formData?.message || "Aqui aparecerá sua mensagem personalizada."}
-          </p>
-          <div className="flex justify-center mt-5">
-            <Button
-              variant="glow"
-              className="px-6 py-7 text-3xl font-bold uppercase"
-            >
-              Aceito🤍
-            </Button>
+          <StyledCarousel photos={checkoutForm?.photos} />
+          <div className="pt-6">
+            <p className="text-sm text-center">
+              {checkoutForm?.message ||
+                "Aqui aparecerá sua mensagem personalizada."}
+            </p>
+            <div className="flex justify-center mt-5">
+              <Button>Aceito🤍</Button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className={cn(selectedDisplay === "pc" ? "" : "hidden")}>
-        <StyledCarousel photos={formData?.photos} />
-      </div>
+      )}
     </div>
   );
 }

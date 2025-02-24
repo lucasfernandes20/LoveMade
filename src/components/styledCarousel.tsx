@@ -39,14 +39,14 @@ export function StyledCarousel({ photos }: CarouselProps) {
   }, [api]);
 
   return (
-    <div className="mx-auto  relative">
+    <div className="mx-auto relative">
       <Carousel
         setApi={setApi}
-        className="w-full"
+        className="w-full bg-transparent"
         opts={{ loop: true }}
         plugins={[
           Autoplay({
-            delay: 3000,
+            delay: 4000,
             active: true,
           }),
         ]}
@@ -54,8 +54,8 @@ export function StyledCarousel({ photos }: CarouselProps) {
         <CarouselContent>
           {(photos || MOCK_COUPLE_IMAGES)?.map((photo, index) => (
             <CarouselItem key={index}>
-              <Card>
-                <CardContent className="relative aspect-square overflow-hidden cursor-grab">
+              <Card containerClassName="bg-transparent" className="border-0">
+                <CardContent className="relative aspect-square cursor-grab">
                   <Image
                     key={index}
                     src={
@@ -64,7 +64,7 @@ export function StyledCarousel({ photos }: CarouselProps) {
                         : URL.createObjectURL(photo)
                     }
                     alt={`Foto ${index + 1}`}
-                    className="object-cover absolute top-0 left-0 w-full h-full"
+                    className="object-contain w-full h-full"
                     width={1080}
                     height={1080}
                   />

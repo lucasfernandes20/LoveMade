@@ -1,7 +1,10 @@
+import { PlanNameEnum } from "./plan";
+
 export interface FormData {
-  senderName?: string;
-  receiverName?: string;
-  relationshipType?: string;
-  photos?: Array<File>;
+  pageTitle?: string;
   message?: string;
+  music?: string;
+  pageAnimation?: number;
+  photos?: Array<File>;
+  plan?: PlanNameEnum;
 }

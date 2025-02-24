@@ -3,6 +3,7 @@ import { Lobster, Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/modules/header";
+import { ContextProvider } from "@/context";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -30,13 +31,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body
-        className={`${poppins.className} ${lobster.variable} font-poppins antialiased dark min-h-svh`}
-      >
-        <Header />
-        {children}
-        <Toaster />
-      </body>
+      <ContextProvider>
+        <body
+          className={`${poppins.className} ${lobster.variable} font-poppins antialiased dark min-h-svh`}
+        >
+          <Header />
+          {children}
+          <Toaster />
+        </body>
+      </ContextProvider>
     </html>
   );
 }
