@@ -1,4 +1,4 @@
-import { useAppState } from "@/context";
+import { useCreateState } from "@/context";
 import { HeaderStep } from "./steps-header";
 import PageTitle from "./steps/pageTitleStep";
 import Message from "./steps/messageStep";
@@ -7,7 +7,7 @@ import UploadStep from "./steps/uploadStep";
 import AnimationStep from "./steps/animationStep";
 
 export default function MultiStepForm() {
-  const [state, setState] = useAppState();
+  const [state, setState] = useCreateState();
 
   const handleSetStep = (index?: number) => {
     if (!index) {

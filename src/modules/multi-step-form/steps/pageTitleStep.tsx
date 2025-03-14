@@ -1,7 +1,7 @@
 // Steps/About.js
 
 import { useForm } from "react-hook-form";
-import { useAppState } from "@/context";
+import { useCreateState } from "@/context";
 import {
   Form,
   FormControl,
@@ -27,7 +27,7 @@ const formSchema = z.object({
 });
 
 export default function PageTitle({ handleSetStep }: PageTitleStepProps) {
-  const [state, setState] = useAppState();
+  const [state, setState] = useCreateState();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

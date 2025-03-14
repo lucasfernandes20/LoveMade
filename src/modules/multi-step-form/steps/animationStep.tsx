@@ -1,7 +1,7 @@
 // Steps/About.js
 
 import { useForm } from "react-hook-form";
-import { useAppState } from "@/context";
+import { useCreateState } from "@/context";
 import {
   Form,
   FormControl,
@@ -28,7 +28,7 @@ const formSchema = z.object({
 });
 
 export default function AnimationStep({ handleSetStep }: AnimationStepProps) {
-  const [state, setState] = useAppState();
+  const [state, setState] = useCreateState();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -84,7 +84,7 @@ export default function AnimationStep({ handleSetStep }: AnimationStepProps) {
               key={animation.id}
               name="animation"
               control={form.control}
-              render={({ field }) => (
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
                 <FormItem>
                   <FormControl>
                     <Card
@@ -111,13 +111,14 @@ export default function AnimationStep({ handleSetStep }: AnimationStepProps) {
                         <Checkbox
                           id={animation.id.toString()}
                           className="w-full h-full opacity-0 bg-white z-30 absolute top-0 left-0"
-                          {...field}
-                          checked={
-                            state.checkoutForm?.pageAnimation === animation.id
-                          }
-                          onCheckedChange={(checked) =>
-                            handleCheckboxChange(animation.id, checked)
-                          }
+                          onBlur={onBlur}
+                          checked={value === animation.id}
+                          name={name}
+                          ref={ref}
+                          onCheckedChange={(checked) => {
+                            handleCheckboxChange(animation.id, checked);
+                            onChange(checked);
+                          }}
                         />
                         <div className="after:content-[''] after:absolute after:inset-0 after:z-10 after:bg-gradient-to-b after:from-black after:via-transparent after:to-transparent"></div>
                       </CardContent>

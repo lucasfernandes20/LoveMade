@@ -20,7 +20,11 @@ export const AppStateContext = createContext<ContextType | undefined>(
   undefined
 );
 
-export function ContextProvider({ children }: { children: React.ReactNode }) {
+export function CreateContextProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const state = useState<AppState>({
     steps: formSteps,
     activeStep: 1,
@@ -32,10 +36,10 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useAppState(): ContextType {
+export function useCreateState(): ContextType {
   const context = useContext(AppStateContext);
   if (!context) {
-    throw new Error("useAppState must be used within the AppProvider");
+    throw new Error("useCreateState must be used within the AppProvider");
   }
   return context;
 }

@@ -3,7 +3,7 @@ import React from "react";
 import { StyledCarousel } from "@/components/styledCarousel";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useAppState } from "@/context";
+import { useCreateState } from "@/context";
 import { animationsIds, AnimationTypeEnum } from "@/models";
 import { Aurora } from "@/components/animations/light-sky";
 import { Stars } from "@/components/animations/stars";
@@ -15,7 +15,7 @@ interface ProposalPreviewProps {
 export default function ProposalPreview({
   selectedDisplay,
 }: ProposalPreviewProps) {
-  const [state] = useAppState();
+  const [state] = useCreateState();
   const { checkoutForm } = state;
 
   const handleRenderAnimationContainer = (children: React.ReactNode) => {

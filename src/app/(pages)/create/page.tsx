@@ -7,6 +7,7 @@ import ProposalPreview from "@/modules/ProposalPreview";
 import { Suspense } from "react";
 import { SmartphoneIcon, TvMinimalIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CreateContextProvider } from "@/context";
 
 function FormContent() {
   const [selectedDisplay, setSelectedDisplay] = useState<"pc" | "phone">(
@@ -66,7 +67,9 @@ function FormContent() {
 export default function FormPage() {
   return (
     <Suspense>
-      <FormContent />
+      <CreateContextProvider>
+        <FormContent />
+      </CreateContextProvider>
     </Suspense>
   );
 }

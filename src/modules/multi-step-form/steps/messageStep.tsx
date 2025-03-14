@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useAppState } from "@/context";
+import { useCreateState } from "@/context";
 import {
   Form,
   FormControl,
@@ -32,7 +32,7 @@ const formSchema = z.object({
 });
 
 export default function Message({ handleSetStep }: MessageStepProps) {
-  const [state, setState] = useAppState();
+  const [state, setState] = useCreateState();
   const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
