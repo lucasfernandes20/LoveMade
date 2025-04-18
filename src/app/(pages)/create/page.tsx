@@ -12,7 +12,7 @@ function FormContent() {
       <section className="container mx-auto flex-grow">
         <div
           className={cn(
-            "w-full flex flex-col md:grid md:grid-cols-[3fr_1.5fr] gap-12 transition-all duration-300 "
+            "w-full flex flex-col md:grid md:grid-cols-[3fr_1.8fr] gap-12 transition-all duration-300 "
           )}
         >
           <CreateForm />

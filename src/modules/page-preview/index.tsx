@@ -23,7 +23,7 @@ export default function PagePreview() {
   
   // Usar dados do formulário ou fallback para valores padrão
   const title = formData?.title || checkoutForm?.title || "Nossa História";
-  const message = formData?.message || checkoutForm?.message || "Sempre me disseram que o melhor lugar do mundo é aquele onde nos sentimos em casa. E eu encontrei esse lugar em você. Ao seu lado, tudo faz sentido, e cada dia é uma nova aventura. Quero continuar escrevendo essa história ao seu lado. Você aceita ser minha pessoa para sempre?...";
+  const message = formData?.message || checkoutForm?.message || "Sempre me disseram que o melhor lugar do mundo é aquele onde nos sentimos em casa. E eu encontrei esse lugar em você. Ao seu lado, tudo faz sentido, e cada dia é uma nova aventura. Quero continuar escrevendo essa história ao seu lado. Você aceita ser minha pessoa para sempre?";
   const label = formData?.photos?.label || checkoutForm?.photos?.label || "Nosso lugar especial";
   const musicUrl = formData?.music || checkoutForm?.music || "Perfect - Ed Sheeran";
   
@@ -145,8 +145,9 @@ export default function PagePreview() {
         />
         
         <div 
-          className="relative bg-black/30 backdrop-blur-xl p-4 md:p-6 rounded-2xl border border-white/10 shadow-xl h-full"
+          className="relative bg-black/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-xl aspect-[9/16] overflow-hidden"
         >
+          <div className="relative w-full h-full overflow-y-auto p-4 md:p-6">
           <div className="flex justify-between items-center mb-4 md:mb-6">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center">
@@ -347,14 +348,15 @@ export default function PagePreview() {
             </motion.div>
           </div>
           
+          </div>
+        </div>
           <motion.div 
             className="absolute inset-0 rounded-2xl border border-primary/30 pointer-events-none"
             animate={{ 
-              boxShadow: ['0 0 0 rgba(236, 72, 153, 0)', '0 0 15px rgba(236, 72, 153, 0.3)', '0 0 0 rgba(236, 72, 153, 0)']
+              boxShadow: ['0 0 0 rgba(236, 72, 153, 0)', '0 0 20px rgba(236, 72, 153, 0.4)', '0 0 0 rgba(236, 72, 153, 0)']
             }}
             transition={{ duration: 3, repeat: Infinity }}
           />
-        </div>
       </div>
     </motion.div>
   );

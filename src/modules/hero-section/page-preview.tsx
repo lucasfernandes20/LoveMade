@@ -119,7 +119,7 @@ export default function PagePreview() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 2.5 + (index * 0.3), duration: 0.5 }}
                 >
-                  <Image src={photoSrc} alt="Foto do casal" fill className="object-cover" />
+                  <Image src={photoSrc} alt="Foto do casal" fill className="object-cover" loading="lazy" />
                 </motion.div>
               </div>
             </motion.div>
