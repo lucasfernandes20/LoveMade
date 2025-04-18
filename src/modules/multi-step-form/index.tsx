@@ -1,3 +1,5 @@
+"use client";
+
 import { useCreateState } from "@/context";
 import { HeaderStep } from "./steps-header";
 import PageTitle from "./steps/pageTitleStep";

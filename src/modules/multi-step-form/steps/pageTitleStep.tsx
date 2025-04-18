@@ -31,14 +31,14 @@ export default function PageTitle({ handleSetStep }: PageTitleStepProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      pageTitle: state.checkoutForm?.pageTitle || "",
+      pageTitle: state.checkoutForm?.title || "",
     },
   });
 
   const saveData = (data: z.infer<typeof formSchema>) => {
     setState({
       ...state,
-      checkoutForm: { ...state.checkoutForm, pageTitle: data.pageTitle },
+      checkoutForm: { ...state.checkoutForm, title: data.pageTitle },
     });
     handleSetStep(state.activeStep);
   };

@@ -1,10 +1,20 @@
 import { PlanNameEnum } from "./plan";
 
-export interface FormData {
-  pageTitle?: string;
-  message?: string;
+export interface commemorativeDate {
+  name: string;
+  date: Date;
+}
+
+export interface Photos {
+  files: Array<File>;
+  label?: string;
+}
+
+export interface CreatePageFormData {
+  title?: string;
+  photos?: Photos;
+  commemorativeDate?: commemorativeDate;
   music?: string;
-  pageAnimation?: number;
-  photos?: Array<File>;
+  message?: string;
   plan?: PlanNameEnum;
 }

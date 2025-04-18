@@ -1,5 +1,5 @@
 "use client";
-import { FormData, formSteps, Steps } from "@/models";
+import { CreatePageFormData, formSteps, Steps } from "@/models";
 import {
   createContext,
   Dispatch,
@@ -9,7 +9,8 @@ import {
 } from "react";
 
 interface AppState {
-  checkoutForm?: FormData;
+  checkoutForm?: CreatePageFormData;
+  formData?: CreatePageFormData;
   steps: Steps[];
   activeStep: number;
 }
