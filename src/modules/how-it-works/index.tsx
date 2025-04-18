@@ -3,7 +3,7 @@
 import { ChevronRight, Heart, Image, MessageSquareText, Timer } from "lucide-react";
 import { motion } from "framer-motion";
 import { StepCard } from "./StepCard";
-import { SectionTitle } from "./SectionTitle";
+import { SectionTitle } from "../../components/SectionTitle";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

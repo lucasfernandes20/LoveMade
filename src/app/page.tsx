@@ -1,5 +1,5 @@
 import Footer from "@/modules/footer";
-import HeroSection from "@/modules/hero-section/hero-section";
+import HeroSection from "@/modules/hero-section";
 import HowItWorks from "@/modules/how-it-works";
 import Prices from "@/modules/prices";
 

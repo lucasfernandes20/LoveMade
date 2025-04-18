@@ -27,12 +27,11 @@ export function StepCard({
 }: StepCardProps) {
   return (
     <motion.div 
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 backdrop-blur-lg"
+      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 backdrop-blur-lg"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true, margin: "-100px" }}
-      whileHover={{ y: -5 }}
     >
       <motion.div 
         className="relative h-64 w-full overflow-hidden"
@@ -60,7 +59,10 @@ export function StepCard({
       </motion.div>
       
       <div className="p-6">
-        <h3 className="mb-2 text-xl font-semibold text-white">{title}</h3>
+        <h3 className="mb-2 text-xl font-semibold text-white">
+          <span className="text-primary mr-2">|</span>
+          {title}
+          </h3>
         <p className="text-base text-foreground/70">{description}</p>
         {children}
       </div>

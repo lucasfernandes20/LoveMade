@@ -3,12 +3,22 @@ export enum PlanNameEnum {
   Surprise = "surprise",
 }
 
-export const prices = [
+export interface Price {
+  title: string;
+  features: string[];
+  desvantagens: string[];
+  priceWithDiscount: string;
+  totalPrice: string;
+  mostPopular: boolean;
+  planName: string;
+}
+
+export const prices: Price[] = [
   {
-    title: "Romântico 💌",
+    title: "Romântico",
     features: [
       "QR Code exclusivo",
-      "Máximo de 3 fotos",
+      "Máximo de 4 fotos",
       "Pedido personalizado",
       "Página ativa por 1 ano",
     ],
@@ -19,10 +29,10 @@ export const prices = [
     planName: "romantic",
   },
   {
-    title: "Surpresa 💎",
+    title: "Surpresa",
     features: [
       "QR Code exclusivo",
-      "Máximo de 7 fotos",
+      "Máximo de 10 fotos",
       "Pedido personalizado",
       "Página ativa para sempre",
       "Com música",
