@@ -18,7 +18,12 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { messagePrompts } from "@/models/proposal";
+
+const messagePrompts = [
+  "Desde o dia em que nos conhecemos, algo em mim mudou. Você trouxe cor para os meus dias, risadas para os meus momentos e paz para o meu coração. Hoje, quero dar mais um passo nessa história linda que estamos construindo. Você aceita namorar comigo?",
+  "Sempre me disseram que o melhor lugar do mundo é aquele onde nos sentimos em casa. E eu encontrei esse lugar em você. Ao seu lado, tudo faz sentido, e cada dia é uma nova aventura. Quero continuar escrevendo essa história ao seu lado. Você aceita ser minha pessoa para sempre?",
+  "Já percebeu como o tempo parece diferente quando estamos juntos? As horas voam quando rimos, mas cada abraço seu faz o mundo parar. Eu não quero apenas momentos com você, quero uma vida inteira. Então, que tal oficializarmos esse amor? Você aceita namorar comigo?",
+];
 
 interface MessageStepProps {
   handleSetStep: (arg?: number) => void;

@@ -4,9 +4,8 @@ import { useCreateState } from "@/context";
 import { HeaderStep } from "./steps-header";
 import PageTitle from "./steps/pageTitleStep";
 import Message from "./steps/messageStep";
-import { useEffect } from "react";
 import UploadStep from "./steps/uploadStep";
-import AnimationStep from "./steps/animationStep";
+import MusicStep from "./steps/musicStep";
 
 export default function MultiStepForm() {
   const [state, setState] = useCreateState();
@@ -31,10 +30,6 @@ export default function MultiStepForm() {
     }));
   };
 
-  useEffect(() => {
-    console.log(state);
-  }, [state]);
-
   const renderStep = (step: number) => {
     switch (step) {
       case 1:
@@ -44,7 +39,7 @@ export default function MultiStepForm() {
       case 3:
         return <UploadStep handleSetStep={handleSetStep} />;
       case 4:
-        return <AnimationStep handleSetStep={handleSetStep} />;
+        return <MusicStep handleSetStep={handleSetStep} />;
       case 5:
         return <PageTitle handleSetStep={handleSetStep} />;
       case 6:

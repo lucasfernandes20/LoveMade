@@ -11,15 +11,15 @@ export const formSteps: Steps[] = [
     title: "Título da página",
     checked: false,
     skip: false,
-    description: "Escolha um título para a sua página. Ex: Maria e João.",
+    description: "Escolha um título para a sua página. Ex: Romeu e Julieta.",
     id: 1,
   },
   {
-    title: "Pedido",
+    title: "Mensagem",
     checked: false,
     skip: false,
     description:
-      "Escreva um pedido especial. Ser criativo agora é o segredo, mas deixamos mensagens ótimas para você utilizar se quiser ;)",
+      "Escreva uma mensagem especial para a sua página. Ser criativo agora é o segredo, mas deixamos mensagens ótimas para você utilizar se quiser ;)",
     id: 2,
   },
   {
@@ -31,11 +31,11 @@ export const formSteps: Steps[] = [
     id: 3,
   },
   {
-    title: "Animação de fundo",
+    title: "Data especial",
     checked: false,
     skip: false,
     description:
-      "Escolha uma animação de fundo para a sua página. Faça com capricho!",
+      "Uma data especial com contagem regressiva. Por exemplo a data do aniversário de namoro ou aniversário de casamento",
     id: 4,
   },
   {
@@ -43,7 +43,7 @@ export const formSteps: Steps[] = [
     checked: false,
     skip: false,
     description:
-      "Que tal adicionar uma música especial para a sua página? Você lembra daquela música que marcou o relacionamento de vocês? Adicione ela aqui e ela será reproduzida automaticamente.",
+      "Que tal adicionar uma música especial para a sua página? Seja uma música que marcou o início do seu namoro ou uma música que vocês gostam de ouvir juntos.",
     id: 5,
   },
   {
@@ -54,3 +54,11 @@ export const formSteps: Steps[] = [
     id: 6,
   },
 ];
+
+export enum StepEnum {
+  TITLE = 1,
+  MESSAGE = 2,
+  PHOTOS = 3,
+  SPECIAL_DATE = 4,
+  MUSIC = 5,
+}

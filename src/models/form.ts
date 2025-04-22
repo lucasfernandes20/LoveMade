@@ -10,11 +10,24 @@ export interface Photos {
   label?: string;
 }
 
+export interface MusicData {
+  displayName: string;
+  artistName: string;
+  trackName: string;
+  albumCover?: string;
+  previewUrl?: string;
+  spotifyUrl?: string;
+  videoId?: string;
+  duration?: string;
+  embedUrl?: string;
+  youtubeUrl?: string;
+}
+
 export interface CreatePageFormData {
   title?: string;
   photos?: Photos;
   commemorativeDate?: commemorativeDate;
-  music?: string;
+  music?: string | MusicData;
   message?: string;
   plan?: PlanNameEnum;
 }

@@ -39,7 +39,7 @@ export const prices: Price[] = [
       "Com animações exclusivas",
     ],
     desvantagens: [],
-    priceWithDiscount: "R$ 29,90",
+    priceWithDiscount: "R$ 27,90",
     totalPrice: "R$ 48,80",
     mostPopular: true,
     planName: "surprise",
