@@ -12,10 +12,10 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { ChevronRightIcon, ExternalLink } from "lucide-react";
-import YouTubeSearchInput, { YouTubeTrack } from "@/components/youtubeSearchInput";
-import { useEffect, useState } from "react";
-import { MusicData } from "@/models";
+import { ChevronRightIcon, Play, Pause } from "lucide-react";
+import YouTubeSearchInput from "@/components/youtubeSearchInput";
+import { useEffect, useState, useRef } from "react";
+import { MusicData, YouTubeTrack } from "@/models";
 import Image from "next/image";
 
 interface MusicStepProps {
@@ -32,15 +32,29 @@ const formSchema = z.object({
 export default function MusicStep({ handleSetStep }: MusicStepProps) {
   const [state, setState] = useCreateState();
   const [selectedTrackData, setSelectedTrackData] = useState<MusicData | null>(null);
+  const [previewTrackId, setPreviewTrackId] = useState<string | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const playerContainerRef = useRef<HTMLDivElement | null>(null);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      music: typeof state.checkoutForm?.music === 'object' 
-        ? (state.checkoutForm.music as MusicData).displayName 
-        : (state.checkoutForm?.music as string) || "",
+      music: state.checkoutForm?.music?.displayName || ""
     },
   });
+
+  useEffect(() => {
+    return () => {
+      if (iframeRef.current) {
+        const parent = iframeRef.current.parentNode;
+        if (parent) {
+          parent.removeChild(iframeRef.current);
+          iframeRef.current = null;
+        }
+        setPreviewTrackId(null);
+      }
+    };
+  }, []);
 
   // Tenta recriar o estado do track se a música já foi selecionada anteriormente
   useEffect(() => {
@@ -61,10 +75,6 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
         artistName: trackData.channelTitle,
         trackName: trackData.title,
         albumCover: trackData.thumbnailUrl,
-        // Mantemos os campos antigos por compatibilidade
-        previewUrl: trackData.embedUrl,
-        spotifyUrl: trackData.watchUrl,
-        // Campos específicos do YouTube
         videoId: trackData.id,
         duration: trackData.duration,
         embedUrl: trackData.embedUrl,
@@ -72,16 +82,84 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
       };
       
       setSelectedTrackData(musicData);
+      
+      // Parar qualquer reprodução quando seleciona uma nova música
+      if (previewTrackId) {
+        togglePlay();
+      }
     } else {
       setSelectedTrackData(null);
     }
   };
 
-  const openYouTubeEmbed = () => {
-    if (selectedTrackData?.embedUrl) {
-      window.open(selectedTrackData.embedUrl, '_blank', 'noopener,noreferrer');
-    } else if (selectedTrackData?.youtubeUrl) {
-      window.open(selectedTrackData.youtubeUrl, '_blank', 'noopener,noreferrer');
+  const togglePlay = () => {
+    if (!selectedTrackData?.embedUrl) return;
+
+    if (previewTrackId) {
+      // Parar reprodução
+      if (iframeRef.current) {
+        const parent = iframeRef.current.parentNode;
+        if (parent) {
+          parent.removeChild(iframeRef.current);
+          iframeRef.current = null;
+        }
+      }
+      setPreviewTrackId(null);
+    } else {
+      // Iniciar reprodução
+      if (playerContainerRef.current) {
+        // Criar o iframe para o YouTube
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none'; // Esconder o iframe (apenas áudio)
+        iframe.allow = 'autoplay';
+        // Parâmetros para autoplay e esconder controles
+        iframe.src = `${selectedTrackData.embedUrl}&autoplay=1&controls=0`;
+        playerContainerRef.current.appendChild(iframe);
+        iframeRef.current = iframe;
+      }
+      const id = selectedTrackData.videoId || null;
+      setPreviewTrackId(id);
+    }
+  };
+
+  // Função para reproduzir músicas da listagem de pesquisa
+  const handlePlayTrack = (track: YouTubeTrack, shouldPlay: boolean) => {
+    // Se já estiver tocando a música selecionada, paramos ela
+    if (previewTrackId && selectedTrackData?.videoId === track.id) {
+      togglePlay();
+      return;
+    }
+
+    // Se estiver tocando outra música, paramos primeiro
+    if (previewTrackId) {
+      // Parar reprodução atual
+      if (iframeRef.current) {
+        const parent = iframeRef.current.parentNode;
+        if (parent) {
+          parent.removeChild(iframeRef.current);
+          iframeRef.current = null;
+        }
+      }
+      setPreviewTrackId(null);
+    }
+
+    // Se for para tocar, iniciamos a reprodução
+    if (shouldPlay) {
+      if (playerContainerRef.current && track.embedUrl) {
+        // Criar o iframe para o YouTube
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none'; // Esconder o iframe (apenas áudio)
+        iframe.allow = 'autoplay';
+        // Parâmetros para autoplay e esconder controles
+        iframe.src = `${track.embedUrl}&autoplay=1&controls=0`;
+        playerContainerRef.current.appendChild(iframe);
+        iframeRef.current = iframe;
+        
+        // Usa type assertion para resolver problema de tipo
+        setPreviewTrackId(track.id as string);
+      }
+    } else {
+      setPreviewTrackId(null);
     }
   };
 
@@ -110,7 +188,10 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
             form.handleSubmit(saveData)();
           }
         }}
-      > 
+      >
+        {/* Container oculto para o player */}
+        <div ref={playerContainerRef} className="hidden"></div>
+        
         <FormField
           name="music"
           control={form.control}
@@ -122,6 +203,8 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
                   autoComplete={"off"} 
                   {...field} 
                   onChange={handleMusicSelected}
+                  onPlayTrack={handlePlayTrack}
+                  currentlyPlayingId={previewTrackId}
                 />
               </FormControl>
               <FormMessage />
@@ -132,7 +215,10 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
         {/* Preview da música selecionada */}
         {selectedTrackData && selectedTrackData.albumCover && (
           <div className="mt-6 bg-muted/30 p-4 rounded-lg flex items-center">
-            <div className="w-16 h-16 rounded-md overflow-hidden flex-shrink-0 relative">
+            <div 
+              className="w-16 h-16 rounded-md overflow-hidden flex-shrink-0 relative cursor-pointer group"
+              onClick={togglePlay}
+            >
               <Image 
                 src={selectedTrackData.albumCover} 
                 alt={selectedTrackData.trackName}
@@ -146,23 +232,37 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
                   {selectedTrackData.duration}
                 </div>
               )}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                {previewTrackId ? (
+                  <Pause className="text-white" size={24} />
+                ) : (
+                  <Play className="text-white" size={24} />
+                )}
+              </div>
             </div>
             <div className="ml-4 flex-grow">
               <div className="font-medium">{selectedTrackData.trackName}</div>
               <div className="text-sm text-muted-foreground">{selectedTrackData.artistName}</div>
               
-              <div className="flex items-center mt-1 gap-2">
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="p-0 h-auto text-xs text-primary hover:text-primary/80 hover:bg-transparent"
-                  onClick={openYouTubeEmbed}
+                  className=" p-0 h-auto text-xs text-primary hover:text-primary/80 hover:bg-transparent"
+                  onClick={togglePlay}
                 >
-                  <ExternalLink size={12} className="mr-1" />
-                  Assistir no YouTube
+                  {previewTrackId ? (
+                    <>
+                      <Pause size={12} />
+                      Pausar
+                    </>
+                  ) : (
+                    <>
+                      <Play size={12} />
+                      Tocar
+                    </>
+                  )}
                 </Button>
-              </div>
             </div>
           </div>
         )}

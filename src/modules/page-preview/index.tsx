@@ -1,9 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Ellipsis, ChevronDown, Music } from "lucide-react";
+import { Ellipsis, ChevronDown, Play, Pause } from "lucide-react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCreateState } from "@/context";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +18,9 @@ export default function PagePreview() {
   const [state] = useCreateState();
 
   const [photos, setPhotos] = useState<string[]>(defaultPhotos);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const playerContainerRef = useRef<HTMLDivElement | null>(null);
 
   const { checkoutForm, formData } = state;
   
@@ -25,7 +28,8 @@ export default function PagePreview() {
   const title = formData?.title || checkoutForm?.title || "Nossa História";
   const message = formData?.message || checkoutForm?.message || "Sempre me disseram que o melhor lugar do mundo é aquele onde nos sentimos em casa. E eu encontrei esse lugar em você. Ao seu lado, tudo faz sentido, e cada dia é uma nova aventura. Quero continuar escrevendo essa história ao seu lado. Você aceita ser minha pessoa para sempre?";
   const label = formData?.photos?.label || checkoutForm?.photos?.label || "Nosso lugar especial";
-  const musicUrl = formData?.music || checkoutForm?.music || "Perfect - Ed Sheeran";
+  const musicData = formData?.music || checkoutForm?.music;
+  const musicUrl = musicData?.displayName || "Perfect - Ed Sheeran";
   
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [showMore, setShowMore] = useState(false);
@@ -123,7 +127,45 @@ export default function PagePreview() {
     ? new Date(formData.commemorativeDate.date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })
     : "15 de outubro";
   
-      
+  // Função para controlar a reprodução de música
+  const toggleMusic = () => {
+    if (isPlaying) {
+      // Parar reprodução
+      if (iframeRef.current) {
+        const parent = iframeRef.current.parentNode;
+        if (parent) {
+          parent.removeChild(iframeRef.current);
+          iframeRef.current = null;
+        }
+      }
+      setIsPlaying(false);
+    } else {
+      // Iniciar reprodução se tivermos os dados da música
+      if (playerContainerRef.current && musicData && typeof musicData === 'object' && musicData.embedUrl) {
+        // Criar o iframe para o YouTube
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none'; // Esconder o iframe (apenas áudio)
+        iframe.allow = 'autoplay';
+        // Parâmetros para autoplay e esconder controles
+        iframe.src = `${musicData.embedUrl}&autoplay=1&controls=0`;
+        playerContainerRef.current.appendChild(iframe);
+        iframeRef.current = iframe;
+        setIsPlaying(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (iframeRef.current) {
+        const parent = iframeRef.current.parentNode;
+        if (parent) {
+          parent.removeChild(iframeRef.current);
+        }
+      }
+    };
+  }, []);
+  
   return (
     <motion.div
       className={`px-4 md:px-8 lg:px-0 w-full h-full`}
@@ -148,6 +190,9 @@ export default function PagePreview() {
           className="relative bg-black/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-xl aspect-[9/16] overflow-hidden"
         >
           <div className="relative w-full h-full overflow-y-auto p-4 md:p-6">
+          {/* Container oculto para o player */}
+          <div ref={playerContainerRef} className="hidden"></div>
+
           <div className="flex justify-between items-center mb-4 md:mb-6">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center">
@@ -313,13 +358,20 @@ export default function PagePreview() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+            <div 
+              className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center cursor-pointer"
+              onClick={toggleMusic}
+            >
               <motion.div 
                 className="w-4 h-4 rounded-full bg-primary flex items-center justify-center"
-                animate={{ scale: [1, 0.8, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
+                animate={{ scale: isPlaying ? [1, 0.8, 1] : 1 }}
+                transition={{ duration: 1, repeat: isPlaying ? Infinity : 0 }}
               >
-                <Music size={8} className="text-white" />
+                {isPlaying ? (
+                  <Pause size={8} className="text-white" />
+                ) : (
+                  <Play size={8} className="text-white" />
+                )}
               </motion.div>
             </div>
             <div className="flex-1">
@@ -332,6 +384,13 @@ export default function PagePreview() {
                 <motion.div 
                   className="h-full bg-gradient-to-r from-primary to-secondary"
                   style={{ width: "30%" }}
+                  animate={{
+                    width: isPlaying ? ["30%", "100%"] : "30%"
+                  }}
+                  transition={{
+                    duration: isPlaying ? 120 : 0,
+                    ease: "linear"
+                  }}
                 />
               </div>
               <span className="text-[8px] text-white/60">3:42</span>

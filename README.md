@@ -6,24 +6,13 @@ Aplicação Next.js para criar convites de casamento personalizados.
 
 ### Variáveis de Ambiente
 
-Antes de executar o projeto, você precisa configurar as seguintes variáveis de ambiente:
+Esta aplicação não necessita de nenhuma variável de ambiente especial para funcionar. Todos os serviços são utilizados sem a necessidade de chaves de API.
 
-1. Crie um arquivo `.env.local` na raiz do projeto com as seguintes variáveis:
+### Funcionalidades
 
-```
-# YouTube API Key (obrigatório para a busca de músicas)
-YOUTUBE_API_KEY=sua_chave_de_api_do_youtube
-```
-
-### Como obter uma chave de API do YouTube
-
-1. Acesse o [Google Cloud Console](https://console.cloud.google.com/)
-2. Crie um novo projeto
-3. Na barra lateral, clique em "APIs e serviços" > "Biblioteca"
-4. Pesquise por "YouTube Data API v3" e ative-a para seu projeto
-5. Em seguida, vá para "APIs e serviços" > "Credenciais"
-6. Clique em "Criar credenciais" > "Chave de API"
-7. Copie a chave gerada e adicione-a ao seu arquivo .env.local
+- **Busca de Músicas**: A aplicação permite que os usuários busquem músicas do YouTube para adicionar aos seus convites de casamento, sem necessidade de API key.
+- **Reprodução de Músicas**: É possível reproduzir as músicas completas diretamente na aplicação através de um player embutido.
+- **Personalização Completa**: Crie convites personalizados com músicas, fotos, mensagens especiais e muito mais.
 
 ## Desenvolvimento
 
@@ -55,21 +44,3 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 # W-Marry-Me
-
-## Configuração do Spotify API
-
-Para que a funcionalidade de busca de músicas funcione corretamente, você precisa criar um aplicativo no Spotify Developer Dashboard e configurar as credenciais:
-
-1. Acesse [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/)
-2. Faça login com sua conta do Spotify
-3. Clique em "Create an App"
-4. Preencha o formulário com o nome e descrição do seu aplicativo
-5. Após criar o aplicativo, você verá o Client ID e Client Secret
-6. Crie um arquivo `.env.local` na raiz do projeto com as seguintes variáveis:
-
-```
-NEXT_PUBLIC_SPOTIFY_CLIENT_ID=seu_client_id_aqui
-NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET=seu_client_secret_aqui
-```
-
-7. Reinicie o servidor de desenvolvimento

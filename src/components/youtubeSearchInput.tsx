@@ -6,34 +6,23 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useDebounce } from "@/hooks/useDebounce";
 import Image from "next/image";
-
-// Tipo para os resultados da busca do YouTube
-export interface YouTubeTrack {
-  id: string;
-  title: string;
-  channelTitle: string;
-  thumbnailUrl: string;
-  duration: string;
-  embedUrl: string;
-  watchUrl: string;
-}
-
+import { YouTubeTrackResponse, YouTubeTrack } from "@/models";
 interface YouTubeSearchInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
-  onChange?: (value: string, trackData?: YouTubeTrack) => void;
+  onChange: (value: string, trackData?: YouTubeTrack) => void;
   value?: string;
+  onPlayTrack: (track: YouTubeTrack, isPlaying: boolean) => void;
+  currentlyPlayingId?: string | null;
 }
 
 const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>(
-  ({ className, onChange, value, ...props }, ref) => {
+  ({ className, onChange, value, onPlayTrack, currentlyPlayingId, ...props }, ref) => {
     const [search, setSearch] = useState("");
     const [debouncedSearch, isDebouncing] = useDebounce(search, 1000);
     const [results, setResults] = useState<YouTubeTrack[]>([]);
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [selectedTrack, setSelectedTrack] = useState<YouTubeTrack | null>(null);
-    const [playing, setPlaying] = useState<string | null>(null);
-    const videoRef = useRef<HTMLIFrameElement | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     // Combinar ref do input para ter controle interno
@@ -60,7 +49,7 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
         setLoading(true);
         try {
           const response = await fetch(`/api/youtube-search?q=${encodeURIComponent(debouncedSearch)}`);
-          const data = await response.json();
+          const data: YouTubeTrackResponse = await response.json();
           
           if (!response.ok) {
             throw new Error(data.error || 'Erro ao buscar músicas');
@@ -77,12 +66,10 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
       fetchMusic();
     }, [debouncedSearch]);
 
-    // Inicializar valor do input se for passado como prop
     useEffect(() => {
       if (value) {
         setSearch(value);
         
-        // Tentar encontrar a track nos resultados existentes
         const savedTrack = results.find(track => 
           track.title === value || `${track.title} - ${track.channelTitle}` === value
         );
@@ -106,54 +93,27 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
     };
 
     const playPreview = (track: YouTubeTrack) => {
-      // Parar qualquer reprodução anterior
-      if (playing) {
-        if (videoRef.current) {
-          videoRef.current.src = "";
-        }
-        setPlaying(null);
-        return;
-      }
-      
-      // Atualizar iframe para reproduzir o vídeo
-      if (videoRef.current) {
-        videoRef.current.src = track.embedUrl;
-        setPlaying(track.id);
-      }
+      const isCurrentlyPlaying = currentlyPlayingId === track.id
+      onPlayTrack(track, !isCurrentlyPlaying);
     };
 
     const selectTrack = (track: YouTubeTrack) => {
       setSelectedTrack(track);
-      const displayValue = `${track.title} - ${track.channelTitle}`;
+      const displayValue = track.title;
       setSearch(displayValue);
-      onChange?.(displayValue, track); // Passa os dados completos da track
+      onChange(displayValue, track);
       setOpen(false);
-      
-      // Parar qualquer vídeo que esteja tocando
-      if (playing) {
-        if (videoRef.current) {
-          videoRef.current.src = "";
-        }
-        setPlaying(null);
-      }
+
     };
     
-    // Quando o estado do popover mudar
     const handlePopoverChange = (isOpen: boolean) => {
       setOpen(isOpen);
       
-      // Se estiver fechando o popover, parar o vídeo e focar de volta no input
       if (!isOpen) {
-        if (playing && videoRef.current) {
-          videoRef.current.src = "";
-          setPlaying(null);
+
+        if(selectedTrack && currentlyPlayingId !== selectedTrack.id) {
+          onPlayTrack(selectedTrack, false);
         }
-        
-        setTimeout(() => {
-          if (inputRef.current) {
-            inputRef.current.focus();
-          }
-        }, 0);
       }
     };
 
@@ -173,9 +133,9 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
                 {...props}
               />
               {loading ? (
-                <Loader2 className="animate-spin absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <Loader2 className="animate-spin absolute right-3 text-gray-400" size={20} />
               ) : (
-                <Music className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <Music className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               )}
             </div>
           </PopoverTrigger>
@@ -196,67 +156,44 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
               </div>
             ) : results.length > 0 ? (
               <div className="max-h-[400px] overflow-y-auto">
-                {/* Vídeo sendo reproduzido */}
-                {playing && (
-                  <div className="w-full aspect-video bg-gray-100 border-b relative">
-                    <iframe
-                      ref={videoRef}
-                      width="100%"
-                      height="100%"
-                      src=""
-                      title="YouTube Video Player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1"
-                      onClick={() => {
-                        if (videoRef.current) {
-                          videoRef.current.src = "";
-                        }
-                        setPlaying(null);
-                      }}
-                    >
-                      Fechar
-                    </Button>
-                  </div>
-                )}
-                
-                {/* Lista de resultados */}
                 {results.map((track) => (
                   <div
                     key={track.id}
                     className={cn(
-                      "flex items-center p-3 hover:bg-foreground/10 cursor-pointer border-b last:border-b-0",
+                      "flex items-center p-3 pr-9 hover:bg-foreground/10 cursor-pointer border-b last:border-b-0 relative",
                       selectedTrack?.id === track.id && "bg-foreground/20",
-                      playing === track.id && "bg-foreground/30"
                     )}
                   >
-                    <div className="w-14 h-10 flex-shrink-0 relative overflow-hidden rounded-md">
+                    <div className={cn("absolute right-3 top-1/2 z-10 -translate-y-1/2 opacity-0",
+                      currentlyPlayingId === track.id && "opacity-100"
+                    )}>
+                      <Music size={20} className="text-foreground/40 animate-pulse" />
+                    </div>
+                    <div className="w-12 h-12 flex-shrink-0 relative overflow-hidden rounded-md">
                       <Image
                         src={track.thumbnailUrl}
                         alt={track.title || "Video thumbnail"}
-                        width={56}
+                        width={40}
                         height={40}
                         loading="lazy"
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute bottom-0 right-0 text-[10px] bg-black/70 text-white px-1 py-0.5 rounded-tl">
+                      <div className="absolute bottom-0 right-0 text-[8px] bg-black/70 text-white px-1 py-0.5 rounded-tl">
                         {track.duration}
                       </div>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition-opacity"
+                        className={
+                          cn("absolute inset-0 !bg-black/70 opacity-0 hover:opacity-100 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2",
+                          currentlyPlayingId === track.id && "opacity-100")
+                        }
                         onClick={(e) => {
                           e.stopPropagation();
                           playPreview(track);
                         }}
                       >
-                        {playing === track.id ? (
+                        {currentlyPlayingId === track.id ? (
                           <Pause size={20} className="text-white" />
                         ) : (
                           <Play size={20} className="text-white" />

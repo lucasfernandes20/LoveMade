@@ -1,3 +1,4 @@
+import { MusicData } from "./music";
 import { PlanNameEnum } from "./plan";
 
 export interface commemorativeDate {
@@ -10,24 +11,11 @@ export interface Photos {
   label?: string;
 }
 
-export interface MusicData {
-  displayName: string;
-  artistName: string;
-  trackName: string;
-  albumCover?: string;
-  previewUrl?: string;
-  spotifyUrl?: string;
-  videoId?: string;
-  duration?: string;
-  embedUrl?: string;
-  youtubeUrl?: string;
-}
-
 export interface CreatePageFormData {
   title?: string;
   photos?: Photos;
   commemorativeDate?: commemorativeDate;
-  music?: string | MusicData;
+  music?: MusicData;
   message?: string;
   plan?: PlanNameEnum;
 }
