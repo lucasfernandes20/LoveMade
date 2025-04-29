@@ -1,46 +1,61 @@
-# Marry Me - Aplicação de Convites de Casamento
+# Love Made - Crie Páginas de Amor Personalizadas
 
-Aplicação Next.js para criar convites de casamento personalizados.
+![Love Made Logo](./public/images/hero.jpg)
 
-## Configuração
+## Sobre o Projeto
 
-### Variáveis de Ambiente
+Love Made é uma aplicação web que permite aos usuários criarem páginas de amor personalizadas para pessoas especiais ou até mesmo para animais de estimação. Cada página pode ser customizada com fotos, mensagens personalizadas, músicas escolhidas pelo usuário, contador para datas comemorativas e muito mais.
 
-Esta aplicação não necessita de nenhuma variável de ambiente especial para funcionar. Todos os serviços são utilizados sem a necessidade de chaves de API.
+### Objetivo
 
-### Funcionalidades
+Oferecer uma plataforma intuitiva onde qualquer pessoa possa expressar seus sentimentos de forma única e criativa, criando uma página digital memorável para presentear alguém especial.
 
-- **Busca de Músicas**: A aplicação permite que os usuários busquem músicas do YouTube para adicionar aos seus convites de casamento, sem necessidade de API key.
-- **Reprodução de Músicas**: É possível reproduzir as músicas completas diretamente na aplicação através de um player embutido.
-- **Personalização Completa**: Crie convites personalizados com músicas, fotos, mensagens especiais e muito mais.
+## Funcionalidades
 
-## Desenvolvimento
+- **Personalização Completa**: Adicione fotos, mensagens, escolha cores e temas que combinam com sua história
+- **Integração com Música**: Busque e adicione músicas do YouTube diretamente na sua página
+- **Player de Música Embutido**: Reprodução completa da música escolhida diretamente na página
+- **Contador de Datas**: Adicione contadores para datas especiais como aniversários de namoro/casamento
+- **Planos Flexíveis**: Diferentes opções de planos para atender às necessidades de cada usuário
+- **Responsivo**: Experiência perfeita em dispositivos móveis, tablets e desktop
 
-Para iniciar o servidor de desenvolvimento:
+## Tecnologias Utilizadas
 
-```bash
-npm run dev
-# ou
-yarn dev
-```
+### Frontend
+- **Next.js 15**: Framework React com renderização do lado do servidor
+- **React 19**: Biblioteca para construção de interfaces
+- **TypeScript**: Superset JavaScript tipado
+- **TailwindCSS**: Framework CSS para design responsivo
+- **Framer Motion**: Biblioteca para animações fluidas
+- **shadcn/ui**: Componentes de UI customizáveis
+- **Embla Carousel**: Carrossel de imagens otimizado
+- **React Hook Form**: Gerenciamento de formulários
+- **Zod**: Validação de dados com tipagem
 
-Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o resultado.
+### Backend & Integração
+- **Stripe**: Processamento de pagamentos via cartão de crédito
+- **Supabase** (em implementação): Banco de dados e autenticação
+- **YouTube**: Integração para busca e reprodução de músicas
+- **Next.js API Routes**: Backend serverless
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Implantação
+- **Vercel**: Plataforma para hospedagem e deploy contínuo
 
-## Learn More
+## Fluxo de Uso
 
-To learn more about Next.js, take a look at the following resources:
+1. **Página Inicial**: O usuário conhece o produto e escolhe um plano
+2. **Criação**: Personaliza sua página de amor com fotos, músicas e mensagens
+3. **Checkout**: Realiza o pagamento através da integração com Stripe
+4. **Publicação**: Recebe um link único para compartilhar sua página personalizada
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Funcionalidades Futuras
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Integração com Mercado Pago**: Suporte a pagamentos via PIX
+- **Temas Adicionais**: Mais opções de design para personalização
+- **Exportação para PDF**: Opção para baixar a página em formato PDF
+- **Notificações**: Lembretes de datas especiais via e-mail
+- **Suporte a Vídeos**: Adicionar vídeos curtos personalizados
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-# W-Marry-Me
+Desenvolvido com ❤️ por [Lucas Fernandes](https://www.linkedin.com/in/lucasfernandesreis/)
