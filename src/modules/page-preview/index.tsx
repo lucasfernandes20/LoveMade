@@ -3,25 +3,37 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Ellipsis, ChevronDown, Play, Pause } from "lucide-react";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useCreateState } from "@/context";
 import { cn } from "@/lib/utils";
+import { useYouTubePlayer } from "@/hooks/useYouTubePlayer";
+import { TimeDisplay } from "@/components/timeDisplay";
+import { Slider } from "@/components/ui/slider";
+import { YouTubeTrack } from "@/models";
 
-  const defaultPhotos = [
-    '/images/couple-preview/4.jpg',
-    '/images/couple-preview/1.jpg',
-    '/images/couple-preview/2.jpg',
-    '/images/couple-preview/3.jpg'
-  ];
+const defaultPhotos = [
+  '/images/couple-preview/4.jpg',
+  '/images/couple-preview/1.jpg',
+  '/images/couple-preview/2.jpg',
+  '/images/couple-preview/3.jpg'
+];
 
 export default function PagePreview() {
   const [state] = useCreateState();
 
   const [photos, setPhotos] = useState<string[]>(defaultPhotos);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  const playerContainerRef = useRef<HTMLDivElement | null>(null);
-
+  const { 
+    previewTrackId, 
+    playerContainerRef, 
+    togglePlay, 
+    duration, 
+    handleSeek, 
+    handleSeekStart, 
+    handleSeekEnd,
+    handleSliderValueChange,
+    visualProgress
+  } = useYouTubePlayer();
+  
   const { checkoutForm, formData } = state;
   
   // Usar dados do formulário ou fallback para valores padrão
@@ -128,43 +140,28 @@ export default function PagePreview() {
     : "15 de outubro";
   
   // Função para controlar a reprodução de música
-  const toggleMusic = () => {
-    if (isPlaying) {
-      // Parar reprodução
-      if (iframeRef.current) {
-        const parent = iframeRef.current.parentNode;
-        if (parent) {
-          parent.removeChild(iframeRef.current);
-          iframeRef.current = null;
-        }
-      }
-      setIsPlaying(false);
-    } else {
-      // Iniciar reprodução se tivermos os dados da música
-      if (playerContainerRef.current && musicData && typeof musicData === 'object' && musicData.embedUrl) {
-        // Criar o iframe para o YouTube
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none'; // Esconder o iframe (apenas áudio)
-        iframe.allow = 'autoplay';
-        // Parâmetros para autoplay e esconder controles
-        iframe.src = `${musicData.embedUrl}&autoplay=1&controls=0`;
-        playerContainerRef.current.appendChild(iframe);
-        iframeRef.current = iframe;
-        setIsPlaying(true);
-      }
+  const handleToggleMusic = () => {
+    if (!musicData || typeof musicData !== 'object') return;
+    
+    // Verificar se temos os dados necessários
+    if (!musicData.embedUrl || !musicData.videoId) {
+      console.warn('Dados de música incompletos para reprodução');
+      return;
     }
+    
+    // Agora temos certeza que embedUrl e videoId existem
+    const track = {
+      id: musicData.videoId,
+      title: musicData.trackName || '',
+      channelTitle: musicData.artistName || '',
+      thumbnailUrl: musicData.albumCover || '',
+      duration: musicData.duration || '',
+      embedUrl: musicData.embedUrl,
+      watchUrl: musicData.youtubeUrl || ''
+    } as YouTubeTrack; // Usar type assertion para garantir compatibilidade
+    
+    togglePlay(track);
   };
-
-  useEffect(() => {
-    return () => {
-      if (iframeRef.current) {
-        const parent = iframeRef.current.parentNode;
-        if (parent) {
-          parent.removeChild(iframeRef.current);
-        }
-      }
-    };
-  }, []);
   
   return (
     <motion.div
@@ -353,48 +350,52 @@ export default function PagePreview() {
           
           {/* Música */}
           <motion.div 
-            className="bg-black/40 backdrop-blur-sm rounded-lg p-3 border border-white/10 flex items-center gap-3"
+            className="bg-black/40 backdrop-blur-sm rounded-lg p-3 border border-white/10 flex flex-col gap-2"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            <div 
-              className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center cursor-pointer"
-              onClick={toggleMusic}
-            >
-              <motion.div 
-                className="w-4 h-4 rounded-full bg-primary flex items-center justify-center"
-                animate={{ scale: isPlaying ? [1, 0.8, 1] : 1 }}
-                transition={{ duration: 1, repeat: isPlaying ? Infinity : 0 }}
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center cursor-pointer"
+                onClick={handleToggleMusic}
               >
-                {isPlaying ? (
-                  <Pause size={8} className="text-white" />
-                ) : (
-                  <Play size={8} className="text-white" />
-                )}
-              </motion.div>
-            </div>
-            <div className="flex-1">
-              <h4 className="text-xs font-medium">Nossa Música</h4>
-              <p className="text-[8px] md:text-[10px] text-white/60 truncate">{musicUrl}</p>
-            </div>
-            <div className="flex gap-2 items-center">
-              <span className="text-[8px] text-white/60">1:24</span>
-              <div className="w-16 h-1 bg-white/20 rounded-full overflow-hidden">
                 <motion.div 
-                  className="h-full bg-gradient-to-r from-primary to-secondary"
-                  style={{ width: "30%" }}
-                  animate={{
-                    width: isPlaying ? ["30%", "100%"] : "30%"
-                  }}
-                  transition={{
-                    duration: isPlaying ? 120 : 0,
-                    ease: "linear"
-                  }}
-                />
+                  className="w-4 h-4 rounded-full bg-primary flex items-center justify-center"
+                  animate={{ scale: previewTrackId ? [1, 0.8, 1] : 1 }}
+                  transition={{ duration: 1, repeat: previewTrackId ? Infinity : 0 }}
+                >
+                  {previewTrackId ? (
+                    <Pause size={8} className="text-white" />
+                  ) : (
+                    <Play size={8} className="text-white" />
+                  )}
+                </motion.div>
               </div>
-              <span className="text-[8px] text-white/60">3:42</span>
+              <div className="flex-1">
+                <h4 className="text-xs font-medium">Nossa Música</h4>
+                <p className="text-[8px] md:text-[10px] text-white/60 truncate max-w-[300px]">{musicUrl}</p>
+              </div>
             </div>
+            
+
+              <div className="flex flex-col gap-1 px-1">
+                <Slider
+                  value={[visualProgress]}
+                  max={duration}
+                  step={1}
+                  onValueChange={(values: number[]) => handleSliderValueChange(values[0])}
+                  onValueCommit={(values: number[]) => handleSeek(values[0])}
+                  onPointerDown={handleSeekStart}
+                  onPointerUp={handleSeekEnd}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-[8px] text-white/60">
+                  <TimeDisplay seconds={visualProgress} className="text-[8px]" />
+                  <TimeDisplay seconds={duration} className="text-[8px]" />
+                </div>
+              </div>
+
           </motion.div>
           
           <div className="mt-3 md:mt-6 flex flex-col items-center">
@@ -409,13 +410,13 @@ export default function PagePreview() {
           
           </div>
         </div>
-          <motion.div 
-            className="absolute inset-0 rounded-2xl border border-primary/30 pointer-events-none"
-            animate={{ 
-              boxShadow: ['0 0 0 rgba(236, 72, 153, 0)', '0 0 20px rgba(236, 72, 153, 0.4)', '0 0 0 rgba(236, 72, 153, 0)']
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
+        <motion.div 
+          className="absolute inset-0 rounded-2xl border border-primary/30 pointer-events-none"
+          animate={{ 
+            boxShadow: ['0 0 0 rgba(236, 72, 153, 0)', '0 0 20px rgba(236, 72, 153, 0.4)', '0 0 0 rgba(236, 72, 153, 0)']
+          }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
       </div>
     </motion.div>
   );

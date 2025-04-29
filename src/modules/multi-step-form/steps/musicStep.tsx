@@ -14,9 +14,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { ChevronRightIcon, Play, Pause } from "lucide-react";
 import YouTubeSearchInput from "@/components/youtubeSearchInput";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { MusicData, YouTubeTrack } from "@/models";
 import Image from "next/image";
+import { useYouTubePlayer } from "@/hooks/useYouTubePlayer";
+import { Slider } from "@/components/ui/slider";
+import { TimeDisplay } from "@/components/timeDisplay";
 
 interface MusicStepProps {
   handleSetStep: (arg?: number) => void;
@@ -32,9 +35,18 @@ const formSchema = z.object({
 export default function MusicStep({ handleSetStep }: MusicStepProps) {
   const [state, setState] = useCreateState();
   const [selectedTrackData, setSelectedTrackData] = useState<MusicData | null>(null);
-  const [previewTrackId, setPreviewTrackId] = useState<string | null>(null);
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  const playerContainerRef = useRef<HTMLDivElement | null>(null);
+  const { 
+    previewTrackId, 
+    playerContainerRef, 
+    playTrack, 
+    togglePlay, 
+    duration, 
+    handleSeek, 
+    handleSeekStart, 
+    handleSeekEnd,
+    handleSliderValueChange,
+    visualProgress
+  } = useYouTubePlayer();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,19 +54,6 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
       music: state.checkoutForm?.music?.displayName || ""
     },
   });
-
-  useEffect(() => {
-    return () => {
-      if (iframeRef.current) {
-        const parent = iframeRef.current.parentNode;
-        if (parent) {
-          parent.removeChild(iframeRef.current);
-          iframeRef.current = null;
-        }
-        setPreviewTrackId(null);
-      }
-    };
-  }, []);
 
   // Tenta recriar o estado do track se a música já foi selecionada anteriormente
   useEffect(() => {
@@ -85,82 +84,27 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
       
       // Parar qualquer reprodução quando seleciona uma nova música
       if (previewTrackId) {
-        togglePlay();
+        togglePlay(trackData);
       }
     } else {
       setSelectedTrackData(null);
     }
   };
 
-  const togglePlay = () => {
-    if (!selectedTrackData?.embedUrl) return;
-
-    if (previewTrackId) {
-      // Parar reprodução
-      if (iframeRef.current) {
-        const parent = iframeRef.current.parentNode;
-        if (parent) {
-          parent.removeChild(iframeRef.current);
-          iframeRef.current = null;
-        }
-      }
-      setPreviewTrackId(null);
-    } else {
-      // Iniciar reprodução
-      if (playerContainerRef.current) {
-        // Criar o iframe para o YouTube
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none'; // Esconder o iframe (apenas áudio)
-        iframe.allow = 'autoplay';
-        // Parâmetros para autoplay e esconder controles
-        iframe.src = `${selectedTrackData.embedUrl}&autoplay=1&controls=0`;
-        playerContainerRef.current.appendChild(iframe);
-        iframeRef.current = iframe;
-      }
-      const id = selectedTrackData.videoId || null;
-      setPreviewTrackId(id);
-    }
-  };
-
-  // Função para reproduzir músicas da listagem de pesquisa
-  const handlePlayTrack = (track: YouTubeTrack, shouldPlay: boolean) => {
-    // Se já estiver tocando a música selecionada, paramos ela
-    if (previewTrackId && selectedTrackData?.videoId === track.id) {
-      togglePlay();
-      return;
-    }
-
-    // Se estiver tocando outra música, paramos primeiro
-    if (previewTrackId) {
-      // Parar reprodução atual
-      if (iframeRef.current) {
-        const parent = iframeRef.current.parentNode;
-        if (parent) {
-          parent.removeChild(iframeRef.current);
-          iframeRef.current = null;
-        }
-      }
-      setPreviewTrackId(null);
-    }
-
-    // Se for para tocar, iniciamos a reprodução
-    if (shouldPlay) {
-      if (playerContainerRef.current && track.embedUrl) {
-        // Criar o iframe para o YouTube
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none'; // Esconder o iframe (apenas áudio)
-        iframe.allow = 'autoplay';
-        // Parâmetros para autoplay e esconder controles
-        iframe.src = `${track.embedUrl}&autoplay=1&controls=0`;
-        playerContainerRef.current.appendChild(iframe);
-        iframeRef.current = iframe;
-        
-        // Usa type assertion para resolver problema de tipo
-        setPreviewTrackId(track.id as string);
-      }
-    } else {
-      setPreviewTrackId(null);
-    }
+  const handleTogglePlay = () => {
+    if (!selectedTrackData?.videoId || !selectedTrackData.embedUrl) return;
+    
+    const track: YouTubeTrack = {
+      id: selectedTrackData.videoId,
+      title: selectedTrackData.trackName || '',
+      channelTitle: selectedTrackData.artistName || '',
+      thumbnailUrl: selectedTrackData.albumCover || '',
+      duration: selectedTrackData.duration || '',
+      embedUrl: selectedTrackData.embedUrl,
+      watchUrl: selectedTrackData.youtubeUrl || ''
+    };
+    
+    togglePlay(track);
   };
 
   const saveData = (data: z.infer<typeof formSchema>) => {
@@ -189,7 +133,6 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
           }
         }}
       >
-        {/* Container oculto para o player */}
         <div ref={playerContainerRef} className="hidden"></div>
         
         <FormField
@@ -203,7 +146,7 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
                   autoComplete={"off"} 
                   {...field} 
                   onChange={handleMusicSelected}
-                  onPlayTrack={handlePlayTrack}
+                  onPlayTrack={playTrack}
                   currentlyPlayingId={previewTrackId}
                 />
               </FormControl>
@@ -214,42 +157,43 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
         
         {/* Preview da música selecionada */}
         {selectedTrackData && selectedTrackData.albumCover && (
-          <div className="mt-6 bg-muted/30 p-4 rounded-lg flex items-center">
-            <div 
-              className="w-16 h-16 rounded-md overflow-hidden flex-shrink-0 relative cursor-pointer group"
-              onClick={togglePlay}
-            >
-              <Image 
-                src={selectedTrackData.albumCover} 
-                alt={selectedTrackData.trackName}
-                width={64}
-                height={64}
-                loading="lazy"
-                className="w-full h-full object-cover"  
-              />
-              {selectedTrackData.duration && (
-                <div className="absolute bottom-0 right-0 text-[10px] bg-black/70 text-white px-1 py-0.5 rounded-tl">
-                  {selectedTrackData.duration}
-                </div>
-              )}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                {previewTrackId ? (
-                  <Pause className="text-white" size={24} />
-                ) : (
-                  <Play className="text-white" size={24} />
+          <div className="mt-6 bg-muted/30 p-4 rounded-lg flex flex-col gap-3">
+            <div className="flex items-center">
+              <div 
+                className="w-16 h-16 rounded-md overflow-hidden flex-shrink-0 relative cursor-pointer group"
+                onClick={handleTogglePlay}
+              >
+                <Image 
+                  src={selectedTrackData.albumCover} 
+                  alt={selectedTrackData.trackName}
+                  width={64}
+                  height={64}
+                  loading="lazy"
+                  className="w-full h-full object-cover"  
+                />
+                {selectedTrackData.duration && (
+                  <div className="absolute bottom-0 right-0 text-[10px] bg-black/70 text-white px-1 py-0.5 rounded-tl">
+                    {selectedTrackData.duration}
+                  </div>
                 )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  {previewTrackId ? (
+                    <Pause className="text-white" size={24} />
+                  ) : (
+                    <Play className="text-white" size={24} />
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="ml-4 flex-grow">
-              <div className="font-medium">{selectedTrackData.trackName}</div>
-              <div className="text-sm text-muted-foreground">{selectedTrackData.artistName}</div>
-              
+              <div className="ml-4 flex-grow">
+                <div className="font-medium">{selectedTrackData.trackName}</div>
+                <div className="text-sm text-muted-foreground">{selectedTrackData.artistName}</div>
+                
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className=" p-0 h-auto text-xs text-primary hover:text-primary/80 hover:bg-transparent"
-                  onClick={togglePlay}
+                  className="p-0 h-auto text-xs text-primary hover:text-primary/80 hover:bg-transparent"
+                  onClick={handleTogglePlay}
                 >
                   {previewTrackId ? (
                     <>
@@ -263,7 +207,27 @@ export default function MusicStep({ handleSetStep }: MusicStepProps) {
                     </>
                   )}
                 </Button>
+              </div>
             </div>
+
+            {previewTrackId && duration > 0 && (
+              <div className="flex flex-col gap-1 px-1">
+                <Slider
+                  value={[visualProgress]}
+                  max={duration}
+                  step={1}
+                  onValueChange={(values: number[]) => handleSliderValueChange(values[0])}
+                  onValueCommit={(values: number[]) => handleSeek(values[0])}
+                  onPointerDown={handleSeekStart}
+                  onPointerUp={handleSeekEnd}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <TimeDisplay seconds={visualProgress} />
+                  <TimeDisplay seconds={duration} />
+                </div>
+              </div>
+            )}
           </div>
         )}
         

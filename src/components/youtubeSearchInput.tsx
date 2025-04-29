@@ -110,7 +110,6 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
       setOpen(isOpen);
       
       if (!isOpen) {
-
         if(selectedTrack && currentlyPlayingId !== selectedTrack.id) {
           onPlayTrack(selectedTrack, false);
         }
