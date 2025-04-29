@@ -1,5 +1,6 @@
 "use client";
-import { CreatePageFormData, formSteps, Steps } from "@/models";
+import { CreateFormSteps, CreatePageFormData } from "@/types";
+import { formSteps } from "@/schemas/const";
 import {
   createContext,
   Dispatch,
@@ -11,7 +12,7 @@ import {
 interface AppState {
   checkoutForm?: CreatePageFormData;
   formData?: CreatePageFormData;
-  steps: Steps[];
+  steps: CreateFormSteps[];
   activeStep: number;
 }
 

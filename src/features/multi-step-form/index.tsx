@@ -1,11 +1,11 @@
 "use client";
 
 import { useCreateState } from "@/context";
-import { HeaderStep } from "./steps-header";
-import PageTitle from "./steps/pageTitleStep";
-import Message from "./steps/messageStep";
-import UploadStep from "./steps/uploadStep";
-import MusicStep from "./steps/musicStep";
+import { HeaderStep } from "./components/step-header";
+import PageTitle from "./components/steps/pageTitleStep";
+import Message from "./components/steps/messageStep";
+import UploadStep from "./components/steps/uploadStep";
+import MusicStep from "./components/steps/musicStep";
 
 export default function MultiStepForm() {
   const [state, setState] = useCreateState();

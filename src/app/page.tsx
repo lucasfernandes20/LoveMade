@@ -1,7 +1,7 @@
-import Footer from "@/modules/footer";
-import HeroSection from "@/modules/hero-section";
-import HowItWorks from "@/modules/how-it-works";
-import Prices from "@/modules/prices";
+import Footer from "@/features/footer";
+import HeroSection from "@/features/hero-section";
+import HowItWorks from "@/features/how-it-works";
+import Prices from "@/features/prices";
 
 export default function Home() {
   return (

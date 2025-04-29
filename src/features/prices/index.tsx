@@ -1,10 +1,10 @@
 'use client'
 
-import { Stars } from "@/components/animations/stars";
-import { prices } from "@/models";
-import { PriceCard } from "./priceCard";
+import { Stars } from "@/components/shared/stars-background";
+import { prices } from "@/schemas/const";
+import { PriceCard } from "./components/priceCard";
 import { motion } from "framer-motion";
-import { SectionTitle } from "@/components/SectionTitle";
+import { SectionTitle } from "@/components/shared/SectionTitle";
 
 export default function Prices() {
   return (

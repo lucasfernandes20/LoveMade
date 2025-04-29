@@ -7,9 +7,9 @@ import { useState, useEffect } from "react";
 import { useCreateState } from "@/context";
 import { cn } from "@/lib/utils";
 import { useYouTubePlayer } from "@/hooks/useYouTubePlayer";
-import { TimeDisplay } from "@/components/timeDisplay";
+import { TimeDisplay } from "@/components/shared/timeDisplay";
 import { Slider } from "@/components/ui/slider";
-import { YouTubeTrack } from "@/models";
+import { YouTubeTrack } from "@/types";
 
 const defaultPhotos = [
   '/images/couple-preview/4.jpg',

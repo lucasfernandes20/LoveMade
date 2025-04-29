@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
-import PagePreview from "@/modules/hero-section/page-preview";
-import DiscoverMore from "@/modules/hero-section/discover-more";
+import PagePreview from "@/features/hero-section/components/page-preview";
+import DiscoverMore from "@/features/hero-section/components/discover-more";
 import { ArrowRight } from "lucide-react";
 
 export default function HeroSection() {

@@ -1,6 +1,6 @@
-import Footer from "@/modules/footer";
-import CreateForm from "@/modules/create-form";
-import PagePreview from "@/modules/page-preview";
+import Footer from "@/features/footer";
+import CreateForm from "@/features/create-form";
+import PagePreview from "@/features/completed-page";
 import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { CreateContextProvider } from "@/context";

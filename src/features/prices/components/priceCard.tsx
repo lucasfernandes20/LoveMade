@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Price } from "@/models";
+import { Price } from "@/types";
 
 interface PriceCardProps {
   price: Price;

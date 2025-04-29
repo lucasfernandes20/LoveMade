@@ -4,7 +4,7 @@ import React from "react";
 
 import { motion } from "framer-motion";
 
-import { Steps } from "@/models";
+import { CreateFormSteps } from "@/types";
 import {
   CircleCheckIcon,
   CircleDashedIcon,
@@ -14,7 +14,7 @@ import {
 interface HeaderStepProps {
   activeStep: number;
   setStep: (step: number) => void;
-  steps: Steps[];
+  steps: CreateFormSteps[];
 }
 
 export function HeaderStep({ activeStep, steps, setStep }: HeaderStepProps) {

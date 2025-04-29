@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { YouTubeTrack } from '@/models';
+import { YouTubeTrack } from '@/types';
 
 interface UseYouTubePlayerReturn {
   previewTrackId: string | null;

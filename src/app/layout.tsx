@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Lobster, Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import Header from "@/modules/header";
+import Header from "@/features/header";
 
 const poppins = Poppins({
   variable: "--font-poppins",

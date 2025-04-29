@@ -13,13 +13,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { ChevronRightIcon, Play, Pause } from "lucide-react";
-import YouTubeSearchInput from "@/components/youtubeSearchInput";
+import YouTubeSearchInput from "../youtubeSearchInput";
 import { useEffect, useState } from "react";
-import { MusicData, YouTubeTrack } from "@/models";
+import { MusicData, YouTubeTrack } from "@/types";
 import Image from "next/image";
 import { useYouTubePlayer } from "@/hooks/useYouTubePlayer";
 import { Slider } from "@/components/ui/slider";
-import { TimeDisplay } from "@/components/timeDisplay";
+import { TimeDisplay } from "@/components/shared/timeDisplay";
 
 interface MusicStepProps {
   handleSetStep: (arg?: number) => void;

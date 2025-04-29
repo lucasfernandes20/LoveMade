@@ -1,4 +1,4 @@
-import { YouTubeTrackResponse } from '@/models';
+import { YouTubeTrackResponse } from '@/types';
 import { NextResponse } from 'next/server';
 import YouTube from 'youtube-sr';
 

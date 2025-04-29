@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef, forwardRef } from "react";
-import { Input } from "./ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Loader2, Music, Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/useDebounce";
 import Image from "next/image";
-import { YouTubeTrackResponse, YouTubeTrack } from "@/models";
+import { YouTubeTrackResponse, YouTubeTrack } from "@/types";
 interface YouTubeSearchInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   onChange: (value: string, trackData?: YouTubeTrack) => void;
