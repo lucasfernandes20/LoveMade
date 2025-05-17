@@ -2,9 +2,9 @@
 
 import { Stars } from "@/components/shared/stars-background";
 import { prices } from "@/schemas/const";
-import { PriceCard } from "./components/priceCard";
 import { motion } from "framer-motion";
 import { SectionTitle } from "@/components/shared/SectionTitle";
+import PlanCard from "@/components/shared/planCard";
 
 export default function Prices() {
   return (
@@ -39,7 +39,7 @@ export default function Prices() {
           viewport={{ once: true }}
         >
           {prices.map((price) => (
-            <PriceCard key={price.planName} price={price} />
+            <PlanCard key={price.planName} plan={price} />
           ))}
         </motion.div>
       </div>

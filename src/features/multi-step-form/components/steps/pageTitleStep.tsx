@@ -26,7 +26,7 @@ const formSchema = z.object({
     .max(90, "Máximo de 90 caracteres"),
 });
 
-export default function PageTitle({ handleSetStep }: PageTitleStepProps) {
+export default function PageTitleStep({ handleSetStep }: PageTitleStepProps) {
   const [state, setState] = useCreateState();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,13 +75,13 @@ export default function PageTitle({ handleSetStep }: PageTitleStepProps) {
           <Button
             type="button"
             onClick={() => handleSetStep()}
-            className="flex-grow"
+            className="flex-1 text-xs px-0 md:px-4 md:text-base"
             disabled={state.activeStep === 1}
           >
             <ChevronRightIcon className="inline rotate-180" />
             Etapa anterior
           </Button>
-          <Button type="submit" className="flex-grow">
+          <Button type="submit" className="flex-1 text-xs px-0 md:px-4 md:text-base">
             Próxima etapa
             <ChevronRightIcon className="inline" />
           </Button>

@@ -2,10 +2,12 @@
 
 import { useCreateState } from "@/context";
 import { HeaderStep } from "./components/step-header";
-import PageTitle from "./components/steps/pageTitleStep";
-import Message from "./components/steps/messageStep";
+import PageTitleStep from "./components/steps/pageTitleStep";
+import MessageStep from "./components/steps/messageStep";
 import UploadStep from "./components/steps/uploadStep";
 import MusicStep from "./components/steps/musicStep";
+import CommemorativeDateStep from "./components/steps/commemorativeDateStep";
+import PlanStep from "./components/steps/planStep";
 
 export default function MultiStepForm() {
   const [state, setState] = useCreateState();
@@ -20,6 +22,8 @@ export default function MultiStepForm() {
         ),
       }));
       return;
+    } else if (index === state.steps.length) {
+      
     }
     setState((prev) => ({
       ...prev,
@@ -33,19 +37,19 @@ export default function MultiStepForm() {
   const renderStep = (step: number) => {
     switch (step) {
       case 1:
-        return <PageTitle handleSetStep={handleSetStep} />;
+        return <PageTitleStep handleSetStep={handleSetStep} />;
       case 2:
-        return <Message handleSetStep={handleSetStep} />;
+        return <MessageStep handleSetStep={handleSetStep} />;
       case 3:
         return <UploadStep handleSetStep={handleSetStep} />;
       case 4:
-        return <MusicStep handleSetStep={handleSetStep} />;
+        return <CommemorativeDateStep handleSetStep={handleSetStep} />;
       case 5:
-        return <PageTitle handleSetStep={handleSetStep} />;
+        return <MusicStep handleSetStep={handleSetStep} />;
       case 6:
-        return <PageTitle handleSetStep={handleSetStep} />;
+        return <PlanStep handleSetStep={handleSetStep} />;
       default:
-        return <PageTitle handleSetStep={handleSetStep} />;
+        return <PageTitleStep handleSetStep={handleSetStep} />;
     }
   };
 

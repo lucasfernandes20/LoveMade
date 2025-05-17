@@ -11,7 +11,6 @@ import {
 
 interface AppState {
   checkoutForm?: CreatePageFormData;
-  formData?: CreatePageFormData;
   steps: CreateFormSteps[];
   activeStep: number;
 }

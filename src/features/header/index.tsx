@@ -17,6 +17,9 @@ export default function Header() {
             <li className="text-xs md:text-sm text-foreground/80 hover:text-foreground">
               <Link href="/#prices">Pacotes</Link>
             </li>
+            <li className="text-xs md:text-sm text-foreground/80 hover:text-foreground">
+              <Link href="/#faqs">FAQ</Link>
+            </li>
           </ul>
         </div>
       </div>

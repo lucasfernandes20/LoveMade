@@ -34,13 +34,12 @@ export default function PagePreview() {
     visualProgress
   } = useYouTubePlayer();
   
-  const { checkoutForm, formData } = state;
+  const { checkoutForm } = state;
   
-  // Usar dados do formulário ou fallback para valores padrão
-  const title = formData?.title || checkoutForm?.title || "Nossa História";
-  const message = formData?.message || checkoutForm?.message || "Sempre me disseram que o melhor lugar do mundo é aquele onde nos sentimos em casa. E eu encontrei esse lugar em você. Ao seu lado, tudo faz sentido, e cada dia é uma nova aventura. Quero continuar escrevendo essa história ao seu lado. Você aceita ser minha pessoa para sempre?";
-  const label = formData?.photos?.label || checkoutForm?.photos?.label || "Nosso lugar especial";
-  const musicData = formData?.music || checkoutForm?.music;
+  const title = checkoutForm?.title || "Nossa História";
+  const message = checkoutForm?.message || "Sempre me disseram que o melhor lugar do mundo é aquele onde nos sentimos em casa. E eu encontrei esse lugar em você. Ao seu lado, tudo faz sentido, e cada dia é uma nova aventura. Quero continuar escrevendo essa história ao seu lado. Você aceita ser minha pessoa para sempre?";
+  const label = checkoutForm?.photos?.label || "Nossas memórias";
+  const musicData = checkoutForm?.music;
   const musicUrl = musicData?.displayName || "Perfect - Ed Sheeran";
   
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -52,7 +51,6 @@ export default function PagePreview() {
     }
   }, [checkoutForm?.photos]);
   
-  // Estado para contagem regressiva
   const [countdown, setCountdown] = useState({
     days: 120,
     hours: 14,
@@ -60,18 +58,25 @@ export default function PagePreview() {
     seconds: 22
   });
   
-  // Atualizar contagem regressiva se data comemorativa estiver disponível
   useEffect(() => {
-    if (formData?.commemorativeDate?.date) {
-      const targetDate = new Date(formData.commemorativeDate.date);
+    if (checkoutForm?.commemorativeDate?.date) {
       const updateCountdown = () => {
         const now = new Date();
-        const difference = targetDate.getTime() - now.getTime();
+        const commemorativeDate = new Date(checkoutForm.commemorativeDate!.date);
         
-        if (difference <= 0) {
-          setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-          return;
+        // Criar uma data para a próxima ocorrência com o ano atual
+        const nextOccurrence = new Date(
+          now.getFullYear(),
+          commemorativeDate.getMonth(),
+          commemorativeDate.getDate()
+        );
+        
+        // Se a data já passou este ano, considerar para o próximo ano
+        if (nextOccurrence < now) {
+          nextOccurrence.setFullYear(now.getFullYear() + 1);
         }
+        
+        const difference = nextOccurrence.getTime() - now.getTime();
         
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -85,7 +90,6 @@ export default function PagePreview() {
       const interval = setInterval(updateCountdown, 1000);
       return () => clearInterval(interval);
     } else {
-      // Contagem regressiva padrão se não houver data comemorativa
       const countdownInterval = setInterval(() => {
         setCountdown(prev => {
           if (prev.seconds === 0) {
@@ -122,9 +126,8 @@ export default function PagePreview() {
       
       return () => clearInterval(countdownInterval);
     }
-  }, [formData?.commemorativeDate?.date]);
+  }, [checkoutForm?.commemorativeDate?.date]);
   
-  // Rotacionar fotos a cada 3 segundos
   useEffect(() => {
     const photoInterval = setInterval(() => {
       setCurrentPhotoIndex((prevIndex) => (prevIndex + 1) % photos.length);
@@ -133,23 +136,20 @@ export default function PagePreview() {
     return () => clearInterval(photoInterval);
   }, [photos.length]);
   
-  // Nome da data comemorativa
-  const commemorativeDate = formData?.commemorativeDate?.name || "Nosso aniversário";
-  const commemorativeDateString = formData?.commemorativeDate?.date 
-    ? new Date(formData.commemorativeDate.date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })
+  const commemorativeDate = checkoutForm?.commemorativeDate?.name || "Nosso aniversário";
+  const commemorativeDateDate = checkoutForm?.commemorativeDate?.date;
+  const commemorativeDateString = commemorativeDateDate 
+    ? new Date(commemorativeDateDate).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })
     : "15 de outubro";
   
-  // Função para controlar a reprodução de música
   const handleToggleMusic = () => {
     if (!musicData || typeof musicData !== 'object') return;
     
-    // Verificar se temos os dados necessários
     if (!musicData.embedUrl || !musicData.videoId) {
       console.warn('Dados de música incompletos para reprodução');
       return;
     }
     
-    // Agora temos certeza que embedUrl e videoId existem
     const track = {
       id: musicData.videoId,
       title: musicData.trackName || '',
@@ -158,14 +158,14 @@ export default function PagePreview() {
       duration: musicData.duration || '',
       embedUrl: musicData.embedUrl,
       watchUrl: musicData.youtubeUrl || ''
-    } as YouTubeTrack; // Usar type assertion para garantir compatibilidade
+    } as YouTubeTrack;
     
     togglePlay(track);
   };
   
   return (
     <motion.div
-      className={`px-4 md:px-8 lg:px-0 w-full h-full`}
+      className="px-4 md:px-8 lg:px-0 w-svw md:max-w-md aspect-[9/16]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.7 }}
@@ -184,10 +184,9 @@ export default function PagePreview() {
         />
         
         <div 
-          className="relative bg-black/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-xl aspect-[9/16] overflow-hidden"
+          className="relative bg-black/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-xl h-full w-full overflow-hidden"
         >
           <div className="relative w-full h-full overflow-y-auto p-4 md:p-6">
-          {/* Container oculto para o player */}
           <div ref={playerContainerRef} className="hidden"></div>
 
           <div className="flex justify-between items-center mb-4 md:mb-6">
@@ -202,8 +201,8 @@ export default function PagePreview() {
             </div>
           </div>
           
-          <div className="grid grid-cols-3 gap-3 mb-3">
-            {photos.slice(0, 3).map((photoSrc, index) => (
+          <div className={cn("w-full grid gap-3 mb-3 grid-flow-col", photos.length < 2 ? 'hidden' : `grid-cols-${Math.min(photos.length, 4)}`)}>
+            {photos.slice(0, Math.min(photos.length, 4)).map((photoSrc, index) => (
               <motion.div 
                 key={photoSrc}
                 className="aspect-square rounded-lg overflow-hidden border border-white/10"
@@ -226,7 +225,7 @@ export default function PagePreview() {
           </div>
           
           <motion.div 
-            className="aspect-video w-full rounded-lg overflow-hidden mb-3 md:mb-5 border border-white/10"
+            className="aspect-square w-full rounded-lg overflow-hidden mb-3 md:mb-5 border border-white/10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -268,21 +267,19 @@ export default function PagePreview() {
             </div>
           </motion.div>
 
-          {/* Mensagem */}
           <motion.div 
-            className="bg-black/40 backdrop-blur-sm rounded-lg p-3 md:p-4 border border-white/10 mb-3 md:mb-5"
+            className="bg-black/40 max-w-full backdrop-blur-sm rounded-lg p-3 md:p-4 border border-white/10 mb-3 md:mb-5"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <p className={cn("text-xs md:text-sm text-white/90 line-clamp-3", showMore ? "line-clamp-none" : "")}>{message}</p>
-            <div className="flex flex-col items-center justify-center mt-2 cursor-pointer" onClick={() => setShowMore(!showMore)}>
+            <p className={cn("text-xs md:text-sm text-white/90 break-words line-clamp-3", showMore ? "line-clamp-none break-words" : "")}>{message}</p>
+            <div className={cn("flex flex-col items-center justify-center mt-2 cursor-pointer", message.length > 100 ? "" : "hidden")} onClick={() => setShowMore(!showMore)}>
               <p className="text-xs md:text-sm text-primary/90">ver {showMore ? "menos" : "mais"}</p>
               <ChevronDown size={12} className={cn("text-primary/90", showMore ? "rotate-180" : "")} />
             </div>
           </motion.div>
           
-          {/* Data comemorativa */}
           <motion.div 
             className="bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-white/10 mb-3 md:mb-5"
             initial={{ opacity: 0, y: 10 }}
@@ -379,26 +376,26 @@ export default function PagePreview() {
             </div>
             
 
-              <div className="flex flex-col gap-1 px-1">
-                <Slider
-                  value={[visualProgress]}
-                  max={duration}
-                  step={1}
-                  onValueChange={(values: number[]) => handleSliderValueChange(values[0])}
-                  onValueCommit={(values: number[]) => handleSeek(values[0])}
-                  onPointerDown={handleSeekStart}
-                  onPointerUp={handleSeekEnd}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-[8px] text-white/60">
-                  <TimeDisplay seconds={visualProgress} className="text-[8px]" />
-                  <TimeDisplay seconds={duration} className="text-[8px]" />
-                </div>
+            <div className="flex flex-col gap-1 px-2 my-3">
+              <Slider
+                value={[visualProgress]}
+                max={duration}
+                step={1}
+                onValueChange={(values: number[]) => handleSliderValueChange(values[0])}
+                onValueCommit={(values: number[]) => handleSeek(values[0])}
+                onPointerDown={handleSeekStart}
+                onPointerUp={handleSeekEnd}
+                className="w-full"
+              />
+              <div className="flex justify-between text-[8px] text-white/60 mt-1">
+                <TimeDisplay seconds={visualProgress} className="text-[8px]" />
+                <TimeDisplay seconds={duration} className="text-[8px]" />
               </div>
+            </div>
 
           </motion.div>
           
-          <div className="mt-3 md:mt-6 flex flex-col items-center">
+          {/* <div className="mt-3 md:mt-6 flex flex-col items-center">
             <p className="text-[10px] text-white/50 mb-1">Mais memórias</p>
             <motion.div
               animate={{ y: [0, 5, 0] }}
@@ -406,7 +403,7 @@ export default function PagePreview() {
             >
               <ChevronDown size={18} className="text-white/50" />
             </motion.div>
-          </div>
+          </div> */}
           
           </div>
         </div>

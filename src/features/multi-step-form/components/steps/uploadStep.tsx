@@ -86,13 +86,13 @@ export default function UploadStep({ handleSetStep }: UploadStepProps) {
           <Button
             type="button"
             onClick={() => handleSetStep()}
-            className="flex-grow"
+            className="flex-1 text-xs px-0 md:px-4 md:text-base"
             disabled={state.activeStep === 1}
           >
             <ChevronRightIcon className="inline rotate-180" />
             Etapa anterior
           </Button>
-          <Button type="submit" className="flex-grow">
+          <Button type="submit" className="flex-1 text-xs px-0 md:px-4 md:text-base">
             Próxima etapa
             <ChevronRightIcon className="inline" />
           </Button>

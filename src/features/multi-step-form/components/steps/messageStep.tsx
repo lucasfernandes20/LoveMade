@@ -20,9 +20,9 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 const messagePrompts = [
-  "Desde o dia em que nos conhecemos, algo em mim mudou. Você trouxe cor para os meus dias, risadas para os meus momentos e paz para o meu coração. Hoje, quero dar mais um passo nessa história linda que estamos construindo. Você aceita namorar comigo?",
-  "Sempre me disseram que o melhor lugar do mundo é aquele onde nos sentimos em casa. E eu encontrei esse lugar em você. Ao seu lado, tudo faz sentido, e cada dia é uma nova aventura. Quero continuar escrevendo essa história ao seu lado. Você aceita ser minha pessoa para sempre?",
-  "Já percebeu como o tempo parece diferente quando estamos juntos? As horas voam quando rimos, mas cada abraço seu faz o mundo parar. Eu não quero apenas momentos com você, quero uma vida inteira. Então, que tal oficializarmos esse amor? Você aceita namorar comigo?",
+  "Tem dias que eu paro e fico pensando em como minha vida mudou depois que você entrou nela. Não falo de grandes revoluções, mas de coisas pequenas que fazem toda a diferença. Um bom dia com mais carinho, uma conversa que me acalma, uma risada inesperada no meio de um dia difícil. Você trouxe leveza, parceria e verdade. É bom saber que posso ser quem sou, sem máscaras, e ainda assim ser escolhido todos os dias. Com você, aprendi que amor também é paz.",
+  "Às vezes, em meio à correria, tudo o que eu preciso é lembrar de você pra me sentir melhor. Não porque você resolve tudo, mas porque com você, tudo parece ter mais propósito. Gosto da forma como a gente se conecta, mesmo nos dias mais nublados. A gente não precisa de perfeição, só de presença. E você tem sido isso: presente. No olhar, nas palavras, no cuidado. É bom amar alguém e sentir que esse alguém também está construindo algo com você, passo a passo.",
+  "Eu não sei o que o futuro reserva pra gente — ninguém sabe. Mas de tudo que vivi até hoje, uma das escolhas mais certeiras foi te amar. Não é sobre prometer que nunca vamos errar, mas sobre saber que estamos dispostos a crescer juntos. Cada momento contigo, dos mais simples aos mais intensos, carrega um valor que palavras não alcançam. E mesmo que o mundo mude lá fora, quero continuar sendo teu lugar seguro, assim como você é o meu.",
 ];
 
 interface MessageStepProps {
@@ -33,10 +33,10 @@ const formSchema = z.object({
   message: z.coerce
     .string()
     .min(2, 'Mande ao menos um "Oi!" :(')
-    .max(500, "Máximo de 500 caracteres"),
+    .max(1_500, "Máximo de 1500 caracteres"),
 });
 
-export default function Message({ handleSetStep }: MessageStepProps) {
+export default function MessageStep({ handleSetStep }: MessageStepProps) {
   const [state, setState] = useCreateState();
   const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -85,7 +85,7 @@ export default function Message({ handleSetStep }: MessageStepProps) {
                   />
                   <div className="border-t border-input flex items-center justify-end px-1 py-3">
                     <p className="text-neutral-400 text-xs mr-4">
-                      {form.getValues("message").length}/{500}
+                      {form.getValues("message").length}/{1_500}
                     </p>
                   </div>
                 </div>
@@ -145,14 +145,14 @@ export default function Message({ handleSetStep }: MessageStepProps) {
         </Collapsible>
         <div className="w-full mt-4 flex items-center gap-4">
           <Button
-            className="flex-grow"
+            className="flex-1 text-xs px-0 md:px-4 md:text-base"
             onClick={() => handleSetStep()}
             disabled={state.activeStep === 1}
           >
             <ChevronRightIcon className="inline rotate-180" />
             Etapa anterior
           </Button>
-          <Button type="submit" className="flex-grow">
+          <Button type="submit" className="flex-1 text-xs px-0 md:px-4 md:text-base">
             Próxima etapa
             <ChevronRightIcon className="inline" />
           </Button>
