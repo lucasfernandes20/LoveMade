@@ -3,6 +3,7 @@ import { Price } from "@/types";
 export const prices: Price[] = [
   {
     title: "Romântico",
+    productId: process.env.NEXT_PUBLIC_STRIPE_ROMANTIC_PLAN_ID || "",
     features: [
       "QR Code exclusivo",
       "Máximo de 4 fotos",
@@ -17,6 +18,7 @@ export const prices: Price[] = [
   },
   {
     title: "Surpresa",
+    productId: process.env.NEXT_PUBLIC_STRIPE_SURPRISE_PLAN_ID || "",
     features: [
       "QR Code exclusivo",
       "Máximo de 10 fotos",

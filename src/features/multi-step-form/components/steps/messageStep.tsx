@@ -32,7 +32,7 @@ interface MessageStepProps {
 const formSchema = z.object({
   message: z.coerce
     .string()
-    .min(2, 'Mande ao menos um "Oi!" :(')
+    .min(2, "Mande ao menos um 'Oi!' :(")
     .max(1_500, "Máximo de 1500 caracteres"),
 });
 
@@ -152,7 +152,10 @@ export default function MessageStep({ handleSetStep }: MessageStepProps) {
             <ChevronRightIcon className="inline rotate-180" />
             Etapa anterior
           </Button>
-          <Button type="submit" className="flex-1 text-xs px-0 md:px-4 md:text-base">
+          <Button
+            type="submit"
+            className="flex-1 text-xs px-0 md:px-4 md:text-base"
+          >
             Próxima etapa
             <ChevronRightIcon className="inline" />
           </Button>

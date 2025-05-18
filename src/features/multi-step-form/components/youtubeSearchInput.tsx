@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Loader2, Music, Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -15,23 +19,31 @@ interface YouTubeSearchInputProps
   currentlyPlayingId?: string | null;
 }
 
-const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>(
-  ({ className, onChange, value, onPlayTrack, currentlyPlayingId, ...props }, ref) => {
+const YouTubeSearchInput = forwardRef<
+  HTMLInputElement,
+  YouTubeSearchInputProps
+>(
+  (
+    { className, onChange, value, onPlayTrack, currentlyPlayingId, ...props },
+    ref
+  ) => {
     const [search, setSearch] = useState("");
     const [debouncedSearch, isDebouncing] = useDebounce(search, 1000);
     const [results, setResults] = useState<YouTubeTrack[]>([]);
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-    const [selectedTrack, setSelectedTrack] = useState<YouTubeTrack | null>(null);
+    const [selectedTrack, setSelectedTrack] = useState<YouTubeTrack | null>(
+      null
+    );
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     // Combinar ref do input para ter controle interno
     const handleInputRef = (inputElement: HTMLInputElement | null) => {
       // Salvar na nossa ref interna
       inputRef.current = inputElement;
-      
+
       // Encaminhar para ref externo
-      if (typeof ref === 'function') {
+      if (typeof ref === "function") {
         ref(inputElement);
       } else if (ref) {
         ref.current = inputElement;
@@ -48,13 +60,15 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
 
         setLoading(true);
         try {
-          const response = await fetch(`/api/youtube-search?q=${encodeURIComponent(debouncedSearch)}`);
+          const response = await fetch(
+            `/api/youtube-search?q=${encodeURIComponent(debouncedSearch)}`
+          );
           const data: YouTubeTrackResponse = await response.json();
-          
+
           if (!response.ok) {
-            throw new Error(data.error || 'Erro ao buscar músicas');
+            throw new Error(data.error || "Erro ao buscar músicas");
           }
-          
+
           setResults(data.results || []);
         } catch (error) {
           console.error("Erro ao buscar músicas:", error);
@@ -69,11 +83,13 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
     useEffect(() => {
       if (value) {
         setSearch(value);
-        
-        const savedTrack = results.find(track => 
-          track.title === value || `${track.title} - ${track.channelTitle}` === value
+
+        const savedTrack = results.find(
+          (track) =>
+            track.title === value ||
+            `${track.title} - ${track.channelTitle}` === value
         );
-        
+
         if (savedTrack) {
           setSelectedTrack(savedTrack);
         }
@@ -93,7 +109,7 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
     };
 
     const playPreview = (track: YouTubeTrack) => {
-      const isCurrentlyPlaying = currentlyPlayingId === track.id
+      const isCurrentlyPlaying = currentlyPlayingId === track.id;
       onPlayTrack(track, !isCurrentlyPlaying);
     };
 
@@ -103,14 +119,13 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
       setSearch(displayValue);
       onChange(displayValue, track);
       setOpen(false);
-
     };
-    
+
     const handlePopoverChange = (isOpen: boolean) => {
       setOpen(isOpen);
-      
+
       if (!isOpen) {
-        if(selectedTrack && currentlyPlayingId !== selectedTrack.id) {
+        if (selectedTrack && currentlyPlayingId !== selectedTrack.id) {
           onPlayTrack(selectedTrack, false);
         }
       }
@@ -132,14 +147,20 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
                 {...props}
               />
               {loading ? (
-                <Loader2 className="animate-spin absolute right-3 text-gray-400" size={20} />
+                <Loader2
+                  className="animate-spin absolute right-3 text-gray-400"
+                  size={20}
+                />
               ) : (
-                <Music className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <Music
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
               )}
             </div>
           </PopoverTrigger>
-          <PopoverContent 
-            className="w-[calc(100vw-2rem)] max-w-md p-0 overflow-hidden" 
+          <PopoverContent
+            className="w-[calc(100vw-2rem)] max-w-md p-0 overflow-hidden"
             align="start"
             onOpenAutoFocus={(e) => {
               e.preventDefault();
@@ -160,13 +181,19 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
                     key={track.id}
                     className={cn(
                       "flex items-center p-3 pr-9 hover:bg-foreground/10 cursor-pointer border-b last:border-b-0 relative",
-                      selectedTrack?.id === track.id && "bg-foreground/20",
+                      selectedTrack?.id === track.id && "bg-foreground/20"
                     )}
                   >
-                    <div className={cn("absolute right-3 top-1/2 z-10 -translate-y-1/2 opacity-0",
-                      currentlyPlayingId === track.id && "opacity-100"
-                    )}>
-                      <Music size={20} className="text-foreground/40 animate-pulse" />
+                    <div
+                      className={cn(
+                        "absolute right-3 top-1/2 z-10 -translate-y-1/2 opacity-0",
+                        currentlyPlayingId === track.id && "opacity-100"
+                      )}
+                    >
+                      <Music
+                        size={20}
+                        className="text-foreground/40 animate-pulse"
+                      />
                     </div>
                     <div className="w-12 h-12 flex-shrink-0 relative overflow-hidden rounded-md">
                       <Image
@@ -183,10 +210,10 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className={
-                          cn("absolute inset-0 !bg-black/70 opacity-0 hover:opacity-100 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2",
-                          currentlyPlayingId === track.id && "opacity-100")
-                        }
+                        className={cn(
+                          "absolute inset-0 !bg-black/70 opacity-0 hover:opacity-100 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2",
+                          currentlyPlayingId === track.id && "opacity-100"
+                        )}
                         onClick={(e) => {
                           e.stopPropagation();
                           playPreview(track);
@@ -203,7 +230,9 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
                       className="ml-3 flex-grow"
                       onClick={() => selectTrack(track)}
                     >
-                      <div className="font-medium text-sm line-clamp-1">{track.title}</div>
+                      <div className="font-medium text-sm line-clamp-1">
+                        {track.title}
+                      </div>
                       <div className="text-xs text-gray-500 line-clamp-1">
                         {track.channelTitle}
                       </div>
@@ -229,4 +258,4 @@ const YouTubeSearchInput = forwardRef<HTMLInputElement, YouTubeSearchInputProps>
 
 YouTubeSearchInput.displayName = "YouTubeSearchInput";
 
-export default YouTubeSearchInput; 
+export default YouTubeSearchInput;

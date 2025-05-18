@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Stars } from "@/components/shared/stars-background";
 import { prices } from "@/schemas/const";
@@ -24,14 +24,11 @@ export default function Prices() {
           className="w-full h-full"
         />
       </div>
-      
+
       {/* Conteúdo da seção */}
       <div className="relative z-10 flex flex-col items-center w-full mx-auto max-w-7xl">
-        <SectionTitle 
-          title="Nossos planos" 
-          subtitle="Feito para você" 
-        />
-        <motion.div 
+        <SectionTitle title="Nossos planos" subtitle="Feito para você" />
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-2 gap-8 mx-auto mt-8"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

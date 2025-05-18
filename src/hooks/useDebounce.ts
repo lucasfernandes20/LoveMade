@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * Hook for debounce values
@@ -23,4 +23,4 @@ export function useDebounce<T>(value: T, delay: number): [T, boolean] {
   }, [value, delay]);
 
   return [debouncedValue, isDebouncing];
-} 
+}

@@ -18,9 +18,8 @@ const lobster = Lobster({
 });
 
 export const metadata: Metadata = {
-  title: "U Marry Me",
-  description:
-    "Pedido de casamento ou namoro com criatividade para marcar o começo desta jornada!",
+  title: "Love Made",
+  description: "Páginas de amor personalizadas",
 };
 
 export default function RootLayout({
@@ -40,4 +39,3 @@ export default function RootLayout({
     </html>
   );
 }
-

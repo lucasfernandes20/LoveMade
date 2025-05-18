@@ -7,8 +7,8 @@ export async function POST(request: Request) {
   const { plan } = body;
 
   const priceIdMap: Record<string, string | undefined> = {
-    romantic: process.env.NEXT_PUBLIC_ROMANTIC_STRIPE_PRICE_ID,
-    surprise: process.env.NEXT_PUBLIC_SURPRISE_STRIPE_PRICE_ID,
+    romantic: process.env.NEXT_PUBLIC_STRIPE_ROMANTIC_PLAN_ID,
+    surprise: process.env.NEXT_PUBLIC_STRIPE_SURPRISE_PLAN_ID,
   };
 
   const selectedPriceId = priceIdMap[plan];
@@ -27,7 +27,6 @@ export async function POST(request: Request) {
         },
       ],
       mode: "payment",
-      payment_method_types: ["card"],
       return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     });
 

@@ -12,6 +12,7 @@ export interface CreateFormSteps {
 export interface commemorativeDate {
   name: string;
   date: Date;
+  style?: "default" | "sophisticated";
 }
 
 export interface Photos {

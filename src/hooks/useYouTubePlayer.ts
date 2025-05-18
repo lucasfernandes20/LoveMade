@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { YouTubeTrack } from '@/types';
+import { useEffect, useRef, useState } from "react";
+import { YouTubeTrack } from "@/types";
 
 interface UseYouTubePlayerReturn {
   previewTrackId: string | null;
@@ -35,9 +35,9 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
 
   useEffect(() => {
     // Carregar a API do YouTube
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName("script")[0];
     firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
 
     return () => {
@@ -99,15 +99,15 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
   const startTrack = (track: YouTubeTrack) => {
     if (playerContainerRef.current && track.embedUrl && track.id) {
       const videoId = track.id;
-      
+
       if (playerRef.current) {
         playerRef.current.destroy();
       }
 
       playerRef.current = new YT.Player(playerContainerRef.current, {
         videoId,
-        height: '0',
-        width: '0',
+        height: "0",
+        width: "0",
         playerVars: {
           autoplay: 1,
           controls: 0,
@@ -125,8 +125,8 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
             if (event.data === YT.PlayerState.ENDED) {
               stopCurrentTrack();
             }
-          }
-        }
+          },
+        },
       });
 
       setPreviewTrackId(videoId);
@@ -177,6 +177,6 @@ export function useYouTubePlayer(): UseYouTubePlayerReturn {
     handleSeekStart,
     handleSeekEnd,
     handleSliderValueChange,
-    visualProgress
+    visualProgress,
   };
-} 
+}
