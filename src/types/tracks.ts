@@ -4,7 +4,6 @@ export interface MusicData {
   trackName: string;
   albumCover?: string;
   previewUrl?: string;
-  spotifyUrl?: string;
   videoId?: string;
   duration?: string;
   embedUrl?: string;
