@@ -248,7 +248,7 @@ export default function CommemorativeDateStep({
                     <label
                       key={style.key}
                       className={cn(
-                        "relative cursor-pointer group rounded-sm border transition-all duration-200 flex flex-col items-center aspect-square overflow-hidden",
+                        "relative cursor-pointer group rounded-xl border transition-all duration-200 flex flex-col items-center aspect-square overflow-hidden",
                         field.value === style.key
                           ? "border-primary ring-2 ring-primary/40"
                           : "border-white/10 hover:border-primary/40"
